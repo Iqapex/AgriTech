@@ -62,7 +62,7 @@ const SupplyChain = () => {
         </div>
 
         <div className="fade-in-section mt-12">
-          <div className="relative overflow-hidden rounded-xl bg-blue-800 p-6 shadow-xl">
+          <div className="relative rounded-xl bg-blue-800 p-6 shadow-xl">
             {/* Supply Chain Flow */}
             <div className="flex flex-wrap justify-between items-center mb-12 relative">
               {/* Connecting Line */}

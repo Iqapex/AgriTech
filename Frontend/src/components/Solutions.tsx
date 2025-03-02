@@ -38,7 +38,7 @@ const Solutions = () => {
         <div className="space-y-8 mt-12">
           {solutions.map((solution, index) => (
             <div key={index} className="fade-in-section">
-              <div className="flex flex-col md:flex-row gap-6 items-start p-6 rounded-xl hover:bg-green-50 transition-colors duration-300">
+              <div className="flex flex-col md:flex-row gap-6 items-start p-6 rounded-xl hover:bg-green-200 transition-colors duration-300">
                 <div className="flex-shrink-0">
                   <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xl">
                     {solution.number}

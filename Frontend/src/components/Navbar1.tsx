@@ -20,7 +20,7 @@ const Navbar1 = () => {
   }, []);
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <nav className={`fixed w-full z-50 px-24 py-4 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center">
           <a href="#" className="flex items-center space-x-2">
@@ -35,7 +35,6 @@ const Navbar1 = () => {
             <a href="#about" className="text-gray-700 hover:text-green-600 transition-colors">About</a>
             <a href="#features" className="text-gray-700 hover:text-green-600 transition-colors">Features</a>
             <a href="#solutions" className="text-gray-700 hover:text-green-600 transition-colors">Solutions</a>
-            <a href="#tech" className="text-gray-700 hover:text-green-600 transition-colors">Technology</a>
             <a href="#team" className="text-gray-700 hover:text-green-600 transition-colors">Team</a>
             <button className="btn-primary">Get Started</button>
           </div>
@@ -53,7 +52,6 @@ const Navbar1 = () => {
             <a href="#about" className="text-gray-700 hover:text-green-600 transition-colors" onClick={() => setIsOpen(false)}>About</a>
             <a href="#features" className="text-gray-700 hover:text-green-600 transition-colors" onClick={() => setIsOpen(false)}>Features</a>
             <a href="#solutions" className="text-gray-700 hover:text-green-600 transition-colors" onClick={() => setIsOpen(false)}>Solutions</a>
-            <a href="#tech" className="text-gray-700 hover:text-green-600 transition-colors" onClick={() => setIsOpen(false)}>Technology</a>
             <a href="#team" className="text-gray-700 hover:text-green-600 transition-colors" onClick={() => setIsOpen(false)}>Team</a>
             <Link to="/login" className="btn-primary w-full">Get Started</Link>
           </div>

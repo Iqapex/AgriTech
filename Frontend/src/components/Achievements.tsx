@@ -41,7 +41,7 @@ const Achievements = () => {
               
               <div className="grid grid-cols-2 gap-6">
                 {stats.map((stat, index) => (
-                  <div key={index} className="text-center p-4 rounded-lg bg-green-50">
+                  <div key={index} className="text-center p-4 rounded-lg bg-green-100 hover:bg-green-200 transition-all duration-300">
                     <p className="text-3xl font-bold text-green-700">{stat.value}</p>
                     <p className="text-gray-600 mt-1">{stat.label}</p>
                   </div>
@@ -56,7 +56,7 @@ const Achievements = () => {
               
               <div className="space-y-6">
                 {achievements.map((achievement, index) => (
-                  <div key={index} className="border-l-4 border-green-500 pl-4">
+                  <div key={index} className="border-l-4 border-green-500 pl-4 py-2 rounded-md bg-green-100 hover:bg-green-200 transition-all duration-300">
                     <h4 className="text-lg font-semibold text-gray-800">{achievement.title}</h4>
                     <p className="text-gray-600 mt-1">{achievement.description}</p>
                   </div>
