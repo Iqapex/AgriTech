@@ -147,7 +147,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10 px-4">
+    <div className="min-h-screen bg-gray-50 pt-24 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex gap-4 mb-6">
           <div className="relative w-1/4">
