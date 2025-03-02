@@ -43,7 +43,7 @@ export default function Contacts() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 px-4">
+    <div className="min-h-screen bg-green-50 pt-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-3 gap-6">
           {/* Pending Requests Column */}
@@ -56,7 +56,7 @@ export default function Contacts() {
                   placeholder="Search contacts"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
 
@@ -77,8 +77,8 @@ export default function Contacts() {
                       className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="bg-blue-100 rounded-full p-2">
-                          <User className="w-5 h-5 text-blue-600" />
+                        <div className="bg-green-100 rounded-full p-2">
+                          <User className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
                           <span className="font-medium block">{request.name}</span>
@@ -129,8 +129,8 @@ export default function Contacts() {
                       key={index}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                      <div className="bg-blue-100 rounded-full p-2">
-                        <User className="w-5 h-5 text-blue-600" />
+                      <div className="bg-green-100 rounded-full p-2">
+                        <User className="w-5 h-5 text-green-600" />
                       </div>
                       <span className="text-gray-800">{name}</span>
                     </div>

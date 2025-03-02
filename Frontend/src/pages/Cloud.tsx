@@ -73,7 +73,7 @@ export default function Cloud() {
   const getFileIcon = (type: FileType) => {
     switch (type) {
       case 'pdf': return <File className="w-12 h-12 text-red-500" />;
-      case 'image': return <Image className="w-12 h-12 text-blue-500" />;
+      case 'image': return <Image className="w-12 h-12 text-green-500" />;
       case 'video': return <Film className="w-12 h-12 text-purple-500" />;
       default: return <File className="w-12 h-12 text-gray-500" />;
     }
@@ -92,7 +92,7 @@ export default function Cloud() {
                 <button 
                   onClick={() => setActiveTab('files')}
                   className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    activeTab === 'files' ? 'bg-blue-50 text-blue-600' : 'hover:bg-blue-50 text-gray-600'
+                    activeTab === 'files' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'
                   }`}
                 >
                   <Folder className="w-5 h-5" />
@@ -102,7 +102,7 @@ export default function Cloud() {
                 <button 
                   onClick={() => setActiveTab('recent')}
                   className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    activeTab === 'recent' ? 'bg-blue-50 text-blue-600' : 'hover:bg-blue-50 text-gray-600'
+                    activeTab === 'recent' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'
                   }`}
                 >
                   <Clock className="w-5 h-5" />
@@ -112,7 +112,7 @@ export default function Cloud() {
                 <button 
                   onClick={() => setActiveTab('photos')}
                   className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    activeTab === 'photos' ? 'bg-blue-50 text-blue-600' : 'hover:bg-blue-50 text-gray-600'
+                    activeTab === 'photos' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'
                   }`}
                 >
                   <Image className="w-5 h-5" />
@@ -122,7 +122,7 @@ export default function Cloud() {
                 <button 
                   onClick={() => setActiveTab('videos')}
                   className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                    activeTab === 'videos' ? 'bg-blue-50 text-blue-600' : 'hover:bg-blue-50 text-gray-600'
+                    activeTab === 'videos' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'
                   }`}
                 >
                   <Video className="w-5 h-5" />
@@ -133,13 +133,13 @@ export default function Cloud() {
               <div className="mt-8">
                 <div className="bg-gray-100 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <CloudIcon className="w-5 h-5 text-blue-600" />
+                    <CloudIcon className="w-5 h-5 text-green-600" />
                     <button className="text-sm text-white bg-red-500 px-3 py-1 rounded-md hover:bg-red-600 transition-colors">
                       Upgrade
                     </button>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '20%' }}></div>
+                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '20%' }}></div>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">3.2 GB of 15GB used</p>
                 </div>
@@ -163,7 +163,7 @@ export default function Cloud() {
                       placeholder="Search files..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500"
                     />
                   </div>
                   
@@ -178,7 +178,7 @@ export default function Cloud() {
                     />
                     <button 
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap"
+                      className="flex items-center space-x-2 text-green-600 hover:text-green-700 transition-colors whitespace-nowrap"
                     >
                       <Upload className="w-5 h-5" />
                       <span>Upload File</span>

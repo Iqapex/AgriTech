@@ -42,10 +42,10 @@ export default function LawyerProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-4 sm:p-8">
+    <div className="min-h-screen bg-gray-50 pt-20 px-4 mb-8">
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
         {/* Profile Header */}
-        <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 p-8">
+        <div className="relative bg-gradient-to-r from-green-400  to-green-700 p-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 relative z-10">
             <div className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/30 flex items-center justify-center">
               <User className="w-16 h-16 text-white/90" strokeWidth={1.5} />
@@ -68,7 +68,7 @@ export default function LawyerProfile() {
               className={`ml-auto flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
                 isAdded 
                   ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-white hover:bg-blue-50 text-blue-600"
+                  : "bg-white hover:bg-blue-50 text-green-600"
               }`}
             >
               {isAdded ? (
@@ -114,15 +114,15 @@ export default function LawyerProfile() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span>Total Cases</span>
-                  <span className="font-semibold text-blue-600">{lawyer.cases}</span>
+                  <span className="font-semibold text-green-600">{lawyer.cases}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Experience Years</span>
-                  <span className="font-semibold text-blue-600">{lawyer.years}</span>
+                  <span className="font-semibold text-green-600">{lawyer.years}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Success Rate</span>
-                  <span className="font-semibold text-blue-600">{(lawyer.rating * 20).toFixed(1)}%</span>
+                  <span className="font-semibold text-green-600">{(lawyer.rating * 20).toFixed(1)}%</span>
                 </div>
               </div>
             </div>
@@ -135,8 +135,8 @@ export default function LawyerProfile() {
                     key={index}
                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-white transition"
                   >
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-blue-600" />
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-green-600" />
                     </div>
                     <span className="text-gray-600">{contact}</span>
                   </li>

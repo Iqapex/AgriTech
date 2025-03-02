@@ -7,7 +7,7 @@ const CreateCases: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'regular' | 'consultancy'>('regular');
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-green-50">
       <motion.div 
         className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6"
         initial={{ opacity: 0, scale: 0.8 }}
@@ -24,7 +24,7 @@ const CreateCases: React.FC = () => {
           <ul className="flex">
             <li className="mr-4">
               <button 
-                className={`py-2 px-4 ${activeTab === 'regular' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`py-2 px-4 ${activeTab === 'regular' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-600 hover:text-green-600'}`}
                 onClick={() => setActiveTab('regular')}
               >
                 Regular
@@ -32,7 +32,7 @@ const CreateCases: React.FC = () => {
             </li>
             <li>
               <button 
-                className={`py-2 px-4 ${activeTab === 'consultancy' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                className={`py-2 px-4 ${activeTab === 'consultancy' ? 'text-green-600 border-b-2 border-green-600' : 'text-gray-600 hover:text-green-600'}`}
                 onClick={() => setActiveTab('consultancy')}
               >
                 Consultancy
@@ -80,7 +80,7 @@ const CreateCases: React.FC = () => {
             </div>
             <div className="flex justify-end space-x-4">
               <button type="button" className="py-2 px-4 border rounded text-gray-700 hover:bg-gray-100">Cancel</button>
-              <button type="submit" className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+              <button type="submit" className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700">Create</button>
             </div>
           </form>
         ) : (
@@ -123,7 +123,7 @@ const CreateCases: React.FC = () => {
             </div>
             <div className="flex justify-end space-x-4">
               <button type="button" className="py-2 px-4 border rounded text-gray-700 hover:bg-gray-100">Cancel</button>
-              <button type="submit" className="py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+              <button type="submit" className="py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700">Create</button>
             </div>
           </form>
         )}

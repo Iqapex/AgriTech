@@ -61,12 +61,12 @@ const PremiumPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       <div className="text-center pt-20 pb-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center bg-blue-100 px-4 py-2 rounded-full mb-6">
-            <Zap className="w-5 h-5 text-blue-600 mr-2" />
-            <span className="font-medium text-blue-600">Join 5000+ Trusted Doctors Worldwide</span>
+          <div className="inline-flex items-center bg-green-100 px-4 py-2 rounded-full mb-6">
+            <Zap className="w-5 h-5 text-green-600 mr-2" />
+            <span className="font-medium text-green-600">Join 5000+ Trusted Doctors Worldwide</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Premium Healthcare Plans
@@ -87,7 +87,7 @@ const PremiumPage = () => {
                 <span className="text-4xl font-bold text-gray-900">Free</span>
               </div>
               <button 
-                className="w-full bg-blue-50 text-blue-600 py-3 rounded-lg cursor-default"
+                className="w-full bg-blue-50 text-green-600 py-3 rounded-lg cursor-default"
                 disabled
               >
                 Current Plan
@@ -101,11 +101,11 @@ const PremiumPage = () => {
           </div>
 
           {/* Monthly Plan */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-blue-200">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-green-200">
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
-                <BadgeCheck className="w-6 h-6 text-blue-600" />
-                <span className="text-sm font-medium text-blue-600">Most Popular</span>
+                <BadgeCheck className="w-6 h-6 text-green-600" />
+                <span className="text-sm font-medium text-green-600">Most Popular</span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Premium Care</h3>
               <div className="my-6">
@@ -114,7 +114,7 @@ const PremiumPage = () => {
               </div>
               <button
                 onClick={() => handleSubscription('monthly')}
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-50"
                 disabled={loadingPlan === 'monthly'}
               >
                 {loadingPlan === 'monthly' ? 'Processing...' : 'Start Free Trial'}
@@ -128,7 +128,7 @@ const PremiumPage = () => {
           </div>
 
           {/* Yearly Plan */}
-          <div className="bg-blue-900 text-white rounded-2xl p-8 relative overflow-hidden">
+          <div className="bg-green-900 text-white rounded-2xl p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 bg-yellow-400 text-black px-4 py-1 text-sm font-medium transform rotate-45 translate-x-8 -translate-y-2">
               Save 30%
             </div>
@@ -140,11 +140,11 @@ const PremiumPage = () => {
               <h3 className="text-2xl font-bold mb-2">Annual Care</h3>
               <div className="my-6">
                 <span className="text-4xl font-bold">₹2,999</span>
-                <span className="text-blue-300 ml-2">/ year</span>
+                <span className="text-green-300 ml-2">/ year</span>
               </div>
               <button
                 onClick={() => handleSubscription('yearly')}
-                className="w-full bg-yellow-400 text-blue-900 py-3 rounded-lg hover:bg-yellow-500 transition-colors font-medium disabled:opacity-50"
+                className="w-full bg-yellow-400 text-green-900 py-3 rounded-lg hover:bg-yellow-500 transition-colors font-medium disabled:opacity-50"
                 disabled={loadingPlan === 'yearly'}
               >
                 {loadingPlan === 'yearly' ? 'Processing...' : 'Get Full Access'}
@@ -169,11 +169,11 @@ const FeatureItem = ({ text, checked = true, white = false }: {
 }) => (
   <div className="flex items-center">
     {checked ? (
-      <CheckCircle2 className={`w-5 h-5 mr-3 ${white ? 'text-white' : 'text-blue-500'}`} />
+      <CheckCircle2 className={`w-5 h-5 mr-3 ${white ? 'text-white' : 'text-green-500'}`} />
     ) : (
       <span className="w-5 h-5 mr-3 text-gray-300">•</span>
     )}
-    <span className={white ? 'text-blue-50' : 'text-gray-700'}>{text}</span>
+    <span className={white ? 'text-green-50' : 'text-gray-700'}>{text}</span>
   </div>
 );
 

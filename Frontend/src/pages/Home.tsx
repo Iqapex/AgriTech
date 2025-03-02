@@ -147,7 +147,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 px-4">
+    <div className="min-h-screen bg-green-50 pt-24 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex gap-4 mb-6">
           <div className="relative w-1/4">
@@ -207,31 +207,31 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center">
-                  <div className="text-xl font-bold text-blue-600">
+                  <div className="text-xl font-bold text-green-600">
                     {lawyer.cases}
                   </div>
                   <div className="text-sm text-gray-600">Cases</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-blue-600">
+                  <div className="text-xl font-bold text-green-600">
                     {lawyer.rating}
                   </div>
                   <div className="text-sm text-gray-600">Rating</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-blue-600">
+                  <div className="text-xl font-bold text-green-600">
                     {lawyer.years}
                   </div>
                   <div className="text-sm text-gray-600">Years</div>
                 </div>
               </div>
               <p className="text-gray-600 mb-4">{lawyer.about}</p>
-              <p className="text-blue-600 text-sm font-medium flex items-center">
+              <p className="text-green-600 text-sm font-medium flex items-center">
                 <MapPin className="w-4 h-4 mr-1" /> {lawyer.location}
               </p>
               <Link
                 to={`/lawyer/${lawyer.name}`}
-                className="w-full bg-blue-600 text-white py-2 rounded-md mt-4 hover:bg-blue-700 transition block text-center"
+                className="w-full bg-green-600 text-white py-2 rounded-md mt-4 hover:bg-green-700 transition block text-center"
               >
                 View Profile
               </Link>

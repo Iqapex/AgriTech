@@ -104,13 +104,13 @@ export default function Feed() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 gap-8">
+    <div className="flex justify-center items-center min-h-screen bg-green-50 gap-8">
   {/* Left Sidebar - Profile Info */}
   <div className="w-80 bg-white shadow-sm p-6 h-auto top-0 rounded">
     <div className="flex items-center space-x-4 mb-8">
       <img 
         src="https://api.dicebear.com/7.x/initials/svg?seed=John+Doe" 
-        className="w-12 h-12 rounded-full border-2 border-blue-500 p-0.5"
+        className="w-12 h-12 rounded-full border-2 border-green-500 p-0.5"
       />
       <div>
         <p className="font-bold text-gray-900">John Doe</p>
@@ -119,13 +119,13 @@ export default function Feed() {
     </div>
     
     <div className="space-y-6">
-      <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-        <h3 className="text-sm font-semibold text-blue-800 mb-3">Profile Strength</h3>
+      <div className="p-4 bg-gradient-to-r from-green-100 to-green-200 rounded-xl">
+        <h3 className="text-sm font-semibold text-green-800 mb-3">Profile Strength</h3>
         <div className="relative pt-1">
           <div className="flex mb-2 items-center justify-between">
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full h-2 w-3/4"
+                className="bg-gradient-to-r from-green-500 to-green-600 rounded-full h-2 w-3/4"
                 style={{ width: '75%' }}
               ></div>
             </div>
@@ -138,7 +138,7 @@ export default function Feed() {
         <ul className="space-y-3">
           <li className="flex items-center space-x-2 text-sm text-gray-600">
             <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-blue-600 text-xs">✏️</span>
+              <span className="text-green-600 text-xs">✏️</span>
             </div>
             <span>Posted an update</span>
           </li>
@@ -149,7 +149,7 @@ export default function Feed() {
             <span>Liked a post</span>
           </li>
           <li className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
               <span className="text-purple-600 text-xs">💬</span>
             </div>
             <span>Commented on article</span>
@@ -174,21 +174,21 @@ export default function Feed() {
               placeholder="What's new with you?"
               value={newPost.content}
               onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-              className="w-full px-4 py-3 border-0 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:bg-white placeholder-gray-500 resize-none"
+              className="w-full px-4 py-3 border-0 rounded-xl bg-gray-50 focus:ring-2 focus:ring-green-500 focus:bg-white placeholder-gray-500 resize-none"
               rows={3}
             />
             {newPost.image && (
               <img src={newPost.image} className="rounded-xl object-cover w-full aspect-video" />
             )}
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-gray-500 hover:text-blue-600 cursor-pointer">
+              <label className="flex items-center gap-2 text-gray-500 hover:text-green-600 cursor-pointer">
                 <input type="file" className="hidden" onChange={handleImageUpload} />
                 <ImageIcon className="w-5 h-5" />
                 <span className="text-sm font-medium">Media</span>
               </label>
               <button 
                 onClick={handlePost}
-                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-medium transition-all"
+                className="px-6 py-2 bg-gradient-to-r from-green-400 to-green-600 hover:from-green-400 hover:to-green-700 text-white rounded-lg font-medium transition-all"
               >
                 Post
               </button>
@@ -223,7 +223,7 @@ export default function Feed() {
           
           <div className="flex items-center gap-4 text-gray-500 pt-4 border-t border-gray-100">
             <button 
-              className="flex items-center gap-2 hover:text-blue-600 px-3 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 hover:text-green-600 px-3 py-2 rounded-lg transition-colors"
               onClick={() => handleLike(post.id)}
             >
               <ThumbsUp className="w-5 h-5" />
@@ -237,7 +237,7 @@ export default function Feed() {
               <span className="text-sm font-medium">{post.comments.length}</span>
             </button>
             <button 
-              className="hover:text-purple-600 px-3 py-2 rounded-lg transition-colors"
+              className="hover:text-green-600 px-3 py-2 rounded-lg transition-colors"
               onClick={() => handleShare(post)}
             >
               <Share2 className="w-5 h-5" />
@@ -249,11 +249,11 @@ export default function Feed() {
               <div className="space-y-4 mb-5">
                 {post.comments.map((comment, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-100 to-purple-100"></div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-100 to-purple-100"></div>
                     <div className="flex-1 bg-gray-50 p-3 rounded-xl">
                       <p className="text-sm text-gray-800">{comment}</p>
                       <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                        <button className="hover:text-blue-600">Like</button>
+                        <button className="hover:text-green-600">Like</button>
                         <span>•</span>
                         <span>1h ago</span>
                       </div>
@@ -271,11 +271,11 @@ export default function Feed() {
                     placeholder="Write a comment..."
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full px-4 py-2.5 pr-20 bg-gray-50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white border-0"
+                    className="w-full px-4 py-2.5 pr-20 bg-gray-50 rounded-xl focus:ring-2 focus:ring-green-500 focus:bg-white border-0"
                   />
                   <button 
                     onClick={() => handleComment(post.id)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors"
                   >
                     Post
                   </button>

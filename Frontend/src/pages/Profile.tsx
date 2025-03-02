@@ -52,7 +52,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 px-4">
+    <div className="min-h-screen bg-gray-50 pt-24 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Profile Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -87,15 +87,15 @@ export default function Profile() {
 
           <div className="grid grid-cols-3 gap-4 mt-6">
             <div className="text-center">
-              <div className="text-xl font-bold text-blue-600">{profile.cases}</div>
+              <div className="text-xl font-bold text-green-600">{profile.cases}</div>
               <div className="text-sm text-gray-600">Cases</div>
             </div>
             <div className="text-center">
-              <div className="text-xl font-bold text-blue-600">{profile.rating}</div>
+              <div className="text-xl font-bold text-green-600">{profile.rating}</div>
               <div className="text-sm text-gray-600">Rating</div>
             </div>
             <div className="text-center">
-              <div className="text-xl font-bold text-blue-600">{profile.experience}</div>
+              <div className="text-xl font-bold text-green-600">{profile.experience}</div>
               <div className="text-sm text-gray-600">Years</div>
             </div>
           </div>

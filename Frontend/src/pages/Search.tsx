@@ -56,7 +56,7 @@ export default function Search() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 px-4">
+    <div className="min-h-screen bg-green-50 pt-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="flex-1 relative">
@@ -66,7 +66,7 @@ export default function Search() {
               placeholder="Enter Location"
               value={searchLocation}
               onChange={(e) => setSearchLocation(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
           
@@ -77,7 +77,7 @@ export default function Search() {
               placeholder="Search by name"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function Search() {
                     </div>
                     <Link 
                       to={`/lawyer/${lawyer.name}`}
-                      className="self-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="self-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                     >
                       View Profile
                     </Link>

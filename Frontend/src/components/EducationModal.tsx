@@ -28,16 +28,16 @@ const EducationModal: React.FC<EducationModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 className="text-xl font-semibold text-sky-700 mb-4 text-center">Education</h3>
+        <h3 className="text-xl font-semibold text-green-700 mb-4 text-center">Education</h3>
         
         <div className="space-y-6">
           <div>
-            <h4 className="font-medium text-sky-700 mb-2">School</h4>
+            <h4 className="font-medium text-green-700 mb-2">School</h4>
             <div className="space-y-3">
               <input
                 type="text"
                 placeholder="School Name"
-                className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.schoolName}
                 onChange={(e) => onChange({...formData, schoolName: e.target.value})}
               />
@@ -45,7 +45,7 @@ const EducationModal: React.FC<EducationModalProps> = ({
               <input
                 type="text"
                 placeholder="Year of graduation"
-                className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.schoolYear}
                 onChange={(e) => onChange({...formData, schoolYear: e.target.value})}
               />
@@ -53,12 +53,12 @@ const EducationModal: React.FC<EducationModalProps> = ({
           </div>
           
           <div>
-            <h4 className="font-medium text-sky-700 mb-2">College</h4>
+            <h4 className="font-medium text-green-700 mb-2">College</h4>
             <div className="space-y-3">
               <input
                 type="text"
                 placeholder="College Name"
-                className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.collegeName}
                 onChange={(e) => onChange({...formData, collegeName: e.target.value})}
               />
@@ -66,7 +66,7 @@ const EducationModal: React.FC<EducationModalProps> = ({
               <input
                 type="text"
                 placeholder="Degree Name"
-                className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.degree}
                 onChange={(e) => onChange({...formData, degree: e.target.value})}
               />
@@ -74,7 +74,7 @@ const EducationModal: React.FC<EducationModalProps> = ({
               <input
                 type="text"
                 placeholder="Year of graduation"
-                className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 value={formData.collegeYear}
                 onChange={(e) => onChange({...formData, collegeYear: e.target.value})}
               />
@@ -85,7 +85,7 @@ const EducationModal: React.FC<EducationModalProps> = ({
         <div className="mt-6">
           <button
             onClick={onSubmit}
-            className="w-full bg-sky-500 text-white py-2 rounded-md hover:bg-sky-600 transition"
+            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
           >
             Enter
           </button>

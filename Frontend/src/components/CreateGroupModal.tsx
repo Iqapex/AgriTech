@@ -38,7 +38,7 @@ export default function CreateGroupModal({ onClose, onCreateGroup }: CreateGroup
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="Chat Group Name"
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
 

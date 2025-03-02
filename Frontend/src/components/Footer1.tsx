@@ -30,16 +30,16 @@ const Footer = () => {
               </ul>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-blue-500">
+          <div className="mt-8 pt-8 border-t border-green-500">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <Scale className="h-8 w-8" />
-                <span className="ml-2 text-2xl font-bold">GOLICIT</span>
+                <span className="ml-2 text-2xl font-bold">AgriTech</span>
               </div>
               <div className="flex space-x-4">
-                <a href="#" className="hover:text-blue-200">Instagram</a>
-                <a href="#" className="hover:text-blue-200">Twitter</a>
-                <a href="#" className="hover:text-blue-200">Facebook</a>
+                <a href="#" className="hover:text-green-200">Instagram</a>
+                <a href="#" className="hover:text-green-200">Twitter</a>
+                <a href="#" className="hover:text-green-200">Facebook</a>
               </div>
             </div>
           </div>

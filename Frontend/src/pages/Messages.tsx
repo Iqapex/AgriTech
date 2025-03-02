@@ -86,12 +86,12 @@ export default function Messages() {
                   <input
                     type="text"
                     placeholder="Search to start a chat"
-                    className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
                 <button 
                   onClick={() => setShowCreateGroup(true)}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                 >
                   <Plus className="w-5 h-5" />
                 </button>
@@ -104,7 +104,7 @@ export default function Messages() {
                     onClick={() => setSelectedGroup(group.id)}
                     className={`w-full text-left p-3 rounded-lg transition-colors ${
                       selectedGroup === group.id
-                        ? 'bg-blue-50 text-blue-600'
+                        ? 'bg-green-50 text-green-600'
                         : 'hover:bg-gray-50 text-gray-700'
                     }`}
                   >
@@ -128,7 +128,7 @@ export default function Messages() {
                         <div
                           className={`max-w-[70%] rounded-lg p-3 ${
                             message.senderId === 'me'
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-green-500 text-white'
                               : 'bg-gray-100 text-gray-800'
                           }`}
                         >
@@ -152,12 +152,12 @@ export default function Messages() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Write something..."
-                        className="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                       />
                       <button
                         onClick={handleSendMessage}
-                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                       >
                         <Send className="w-5 h-5" />
                       </button>

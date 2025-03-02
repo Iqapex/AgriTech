@@ -27,14 +27,14 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 className="text-xl font-semibold text-sky-700 mb-4 text-center">Introduction</h3>
+        <h3 className="text-xl font-semibold text-green-700 mb-4 text-center">Introduction</h3>
         
         <div className="space-y-4">
           <div>
             <input
               type="text"
               placeholder="First Name"
-              className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formData.name}
               onChange={(e) => onChange({...formData, name: e.target.value})}
             />
@@ -44,7 +44,7 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
             <input
               type="text"
               placeholder="Last Name"
-              className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formData.lastName}
               onChange={(e) => onChange({...formData, lastName: e.target.value})}
             />
@@ -54,7 +54,7 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
             <input
               type="date"
               placeholder="Date of Birth"
-              className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formData.dob}
               onChange={(e) => onChange({...formData, dob: e.target.value})}
             />
@@ -63,7 +63,7 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
           <div>
             <textarea
               placeholder="Something about you..."
-              className="w-full p-2 border border-sky-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 min-h-[100px]"
+              className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[100px]"
               value={formData.about}
               onChange={(e) => onChange({...formData, about: e.target.value})}
             />
@@ -73,7 +73,7 @@ const IntroductionModal: React.FC<IntroductionModalProps> = ({
         <div className="mt-6">
           <button
             onClick={onSubmit}
-            className="w-full bg-sky-500 text-white py-2 rounded-md hover:bg-sky-600 transition"
+            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
           >
             Enter
           </button>
