@@ -36,7 +36,7 @@ const Navbar1 = () => {
             <a href="#features" className="text-gray-700 hover:text-green-600 transition-colors">Features</a>
             <a href="#solutions" className="text-gray-700 hover:text-green-600 transition-colors">Solutions</a>
             <a href="#team" className="text-gray-700 hover:text-green-600 transition-colors">Team</a>
-            <button className="btn-primary">Get Started</button>
+            <Link to="/login" className="btn-primary w-full">Get Started</Link>
           </div>
 
           <button 

@@ -10,7 +10,8 @@ import {
   User2,
   Menu,
   X,
-  Scale,
+  Leaf,
+
 } from "lucide-react";
 
 const navLinks = [
@@ -52,7 +53,7 @@ export default function Navbar({ setIsAuth }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <Scale className="h-8 w-8 text-indigo-600" />
+            <Leaf className="h-8 w-8 text-green-600" />
             <span className="text-xl font-bold text-gray-900">GOLICIT</span>
           </Link>
 

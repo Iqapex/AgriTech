@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import img1 from '/img1.png'
+import img3 from '/img3.png'
+import img2 from '/img2.png'
 import { Apple, Smartphone, ArrowRight, Check, Download, Users, ShieldCheck, BarChart3 } from 'lucide-react';
 
 const AppDownload = () => {
@@ -9,17 +12,17 @@ const AppDownload = () => {
     {
       title: "Join a Network of Trusted Farmers and Vendors",
       description: "The easiest way to reach from Farm to Vendor in just a few simple steps",
-      image: "https://i.ibb.co/Jt9WLSN/app-screen.jpg"
+      image: img1
     },
     {
       title: "Track Your Produce in Real-Time",
       description: "Monitor your crops from farm to market with complete transparency",
-      image: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+      image: img2
     },
     {
       title: "Get Expert Agricultural Advice",
       description: "Connect with agricultural specialists for personalized guidance",
-      image: "https://images.unsplash.com/photo-1586892478025-2b5472316bf4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+      image: img3
     }
   ];
   
@@ -115,7 +118,7 @@ const AppDownload = () => {
                       <img 
                         src={appScreens[activeScreen].image}
                         alt={`App Screen ${activeScreen + 1}`}
-                        className="w-full h-full object-cover"
+                        className="scale-110 object-cover"
                       />
                     </div>
                     

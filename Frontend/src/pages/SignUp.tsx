@@ -1,7 +1,7 @@
 // pages/SignUp.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Scale, Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, Leaf } from 'lucide-react';
 import { useApi } from '../hooks/useApi';
 import { Notification } from '../components/Notification';
 
@@ -56,9 +56,9 @@ export default function SignUp() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+      <div className="max-w-md w-full space-y-8 bg-green-50 p-8 mt-12 rounded-xl shadow-lg">
         <div className="flex flex-col items-center">
-          <Scale className="h-12 w-12 text-indigo-600" />
+          <Leaf className="h-12 w-12 text-green-600" />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign Up</h2>
         </div>
         
@@ -72,7 +72,7 @@ export default function SignUp() {
                   required
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   placeholder="First Name"
                 />
               </div>
@@ -82,7 +82,7 @@ export default function SignUp() {
                   required
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   placeholder="Last Name"
                 />
               </div>
@@ -94,7 +94,7 @@ export default function SignUp() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Email ID"
               />
             </div>
@@ -105,7 +105,7 @@ export default function SignUp() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Password"
               />
             </div>
@@ -118,11 +118,11 @@ export default function SignUp() {
                 type="checkbox"
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
               />
               <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
                 I agree to the{' '}
-                <a href="#" className="text-indigo-600 hover:text-indigo-500">
+                <a href="#" className="text-green-600 hover:text-green-500">
                   Terms and Conditions
                 </a>
               </label>
@@ -130,10 +130,10 @@ export default function SignUp() {
             <select
               value={userType}
               onChange={(e) => setUserType(e.target.value)}
-              className="appearance-none rounded-lg px-4 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm w-32"
+              className="appearance-none rounded-lg px-4 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm w-32"
             >
-              <option value="client">Client</option>
-              <option value="lawyer">Lawyer</option>
+              <option value="client">Farmer</option>
+              <option value="lawyer">Vendor</option>
             </select>
           </div>
 
@@ -142,16 +142,16 @@ export default function SignUp() {
             disabled={!acceptTerms || loading}
             className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
               acceptTerms && !loading
-                ? 'bg-indigo-600 hover:bg-indigo-700'
-                : 'bg-gray-400 cursor-not-allowed'
-            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors`}
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-green-300 cursor-not-allowed'
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors`}
           >
             {loading ? 'Signing up...' : 'Sign up'}
           </button>
 
           <div className="text-center text-sm">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
               Log In
             </Link>
           </div>

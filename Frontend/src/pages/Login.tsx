@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Scale, Mail, Lock } from "lucide-react";
+import { Mail, Lock, Leaf } from "lucide-react";
 import { useApi } from "../hooks/useApi"; // Import the useApi hook
 
 export default function Login({
@@ -43,9 +43,9 @@ export default function Login({
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+      <div className="max-w-md w-full space-y-8 bg-green-50 p-8 md:mt-8 rounded-xl shadow-lg">
         <div className="flex flex-col items-center">
-          <Scale className="h-12 w-12 text-indigo-600" />
+          <Leaf className="h-12 w-12 text-green-600" />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Log In
           </h2>
@@ -63,7 +63,7 @@ export default function Login({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Email"
               />
             </div>
@@ -74,7 +74,7 @@ export default function Login({
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="Password"
               />
             </div>
@@ -84,7 +84,7 @@ export default function Login({
             <div className="text-sm">
               <Link
                 to="/forgot-password"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                className="font-medium text-green-600 hover:text-green-500"
               >
                 Forgot your password?
               </Link>
@@ -94,7 +94,7 @@ export default function Login({
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             {loading ? "Logging in..." : "Log in"}
           </button>
@@ -103,7 +103,7 @@ export default function Login({
             Don't have an Account?{" "}
             <Link
               to="/signup"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-medium text-green-600 hover:text-green-500"
             >
               Sign Up
             </Link>
