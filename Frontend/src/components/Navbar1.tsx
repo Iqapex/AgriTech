@@ -20,7 +20,7 @@ const Navbar1 = () => {
   }, []);
 
   return (
-    <nav className={`fixed w-full z-50 px-24 py-4 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <nav className={`fixed w-full z-50 md:px-24 py-4 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center">
           <a href="#" className="flex items-center space-x-2">

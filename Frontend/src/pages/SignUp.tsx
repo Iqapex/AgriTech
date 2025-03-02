@@ -35,7 +35,7 @@ export default function SignUp() {
           lastname: lastName,
           emailId: email,
           password,
-          isLawyer: userType === 'lawyer'
+          isLawyer: userType === 'Vendor'
         },
       });
 
