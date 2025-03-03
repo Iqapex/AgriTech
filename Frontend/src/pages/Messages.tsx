@@ -1,9 +1,8 @@
 // src/components/Messages.tsx
 import { useEffect, useState, useRef } from 'react';
 import { Search, Plus, Send } from 'lucide-react';
-import  io  from 'socket.io-client';
-import {useApi} from '../hooks/useApi';
-import { Socket } from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
+import { useApi } from '../hooks/useApi';
 
 // Types
 type Message = {
@@ -25,6 +24,11 @@ type User = {
   username: string;
 };
 
+type OnlineUser = {
+  userId: string;
+  socketId: string;
+};
+
 const Messages = () => {
   // State
   const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -34,87 +38,144 @@ const Messages = () => {
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
-  
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+
   // Refs
-  const socket = useRef< Socket >();
+  const socket = useRef<typeof Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Use a ref to always have the latest selectedConversation for socket callbacks.
+  const selectedConversationRef = useRef<string | null>(selectedConversation);
   const { fetchData } = useApi();
 
-  // Mock users (replace with actual API call)
-  const mockUsers: User[] = [
-    { _id: '1', username: 'User 1' },
-    { _id: '2', username: 'User 2' },
-    { _id: '3', username: 'User 3' },
-  ];
-
-  // Connect to WebSocket
+  // When selectedConversation changes, update its ref.
   useEffect(() => {
-    Socket.current = io('http://localhost:8900');
+    selectedConversationRef.current = selectedConversation;
+  }, [selectedConversation]);
 
-    Socket.current.on('connect', () => {
+  // Socket connection (runs once when component mounts or when currentUser changes)
+  useEffect(() => {
+    socket.current = io('http://localhost:8900');
+
+    socket.current.on('connect', () => {
       console.log('Connected to WebSocket');
+      if (currentUser) {
+        socket.current?.emit('addUser', currentUser._id);
+      }
     });
 
-    Socket.current.on('receiveMessage', (newMessage: Message) => {
-      if (newMessage.conversationId === selectedConversation) {
-        setMessages(prev => [...prev, newMessage]);
+    // Listen for online users from the server
+    socket.current.on('getUsers', (usersFromServer: OnlineUser[]) => {
+      setOnlineUsers(usersFromServer);
+    });
+
+    // Listen for incoming messages
+    socket.current.on('getMessage', (newMsg: Message) => {
+      // Only update if the message belongs to the currently selected conversation.
+      if (newMsg.conversationId === selectedConversationRef.current) {
+        setMessages(prev => [...prev, newMsg]);
       }
     });
 
     return () => {
-      Socket.current?.disconnect();
+      socket.current?.disconnect();
     };
-  }, []);
+  }, [currentUser]);
 
-  // Fetch conversations when user changes
+  // When currentUser changes, fetch available users from backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await fetchData('/api/users');
+        // Exclude current user from the list
+        const filteredUsers = data.filter((u: User) => u._id !== currentUser?._id);
+        setAvailableUsers(filteredUsers);
+      } catch (err) {
+        console.error('Failed to fetch available users:', err);
+      }
+    };
+
+    if (currentUser) {
+      fetchUsers();
+    }
+  }, [currentUser, fetchData]);
+
+  // Fetch conversations for the current user
   useEffect(() => {
     const fetchConversations = async () => {
       if (currentUser?._id) {
-        const data = await fetchData(`/api/conversation/${currentUser._id}`);
-        setConversations(data);
+        try {
+          const data = await fetchData(`/api/conversation/${currentUser._id}`);
+          setConversations(data);
+        } catch (error) {
+          console.error('Failed to fetch conversations:', error);
+        }
       }
     };
     fetchConversations();
-  }, [currentUser]);
+  }, [currentUser, fetchData]);
 
-  // Fetch messages when conversation changes
+  // Fetch messages for the selected conversation
   useEffect(() => {
     const fetchMessages = async () => {
       if (selectedConversation) {
-        const data = await fetchData(`/api/message/${selectedConversation}`);
-        setMessages(data);
+        try {
+          const data = await fetchData(`/api/message/${selectedConversation}`);
+          setMessages(data);
+        } catch (error) {
+          console.error('Failed to fetch messages:', error);
+        }
       }
     };
     fetchMessages();
-  }, [selectedConversation]);
+  }, [selectedConversation, fetchData]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Helper: When a contact is clicked, fetch (or create) the conversation between the current user and that contact.
+  const handleSelectContact = async (user: User) => {
+    if (!currentUser) return;
+    try {
+      const conversation = await fetchData(
+        `/api/conversation/find/${currentUser._id}/${user._id}`
+      );
+      setSelectedConversation(conversation._id);
+      // Optionally, update the conversation list here.
+    } catch (err) {
+      console.error('Failed to fetch or create conversation', err);
+    }
+  };
+
+  // Send a message: save via API and then emit through the socket.
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation || !currentUser) return;
 
     const messageData = {
       conversationId: selectedConversation,
       senderId: currentUser._id,
-      text: newMessage
+      text: newMessage,
     };
 
     try {
-      // Send message via API
+      // Save message to the database via API
       const savedMessage = await fetchData('/api/message', 'POST', messageData);
-      
-      // Update local state
       setMessages(prev => [...prev, savedMessage]);
       setNewMessage('');
-      
-      // Send via WebSocket
+
+      // Determine recipient IDs (all members in the conversation except the sender)
+      const conversation = conversations.find(convo => convo._id === selectedConversation);
+      const recieverIds = conversation
+        ? conversation.members.filter(member => member !== currentUser._id)
+        : [];
+
+      // Emit the message via WebSocket
       socket.current?.emit('sendMessage', {
         senderId: currentUser._id,
+        recieverIds,
         conversationId: selectedConversation,
-        text: newMessage
+        text: newMessage,
       });
     } catch (err) {
       console.error('Failed to send message:', err);
@@ -126,20 +187,26 @@ const Messages = () => {
       <div className="max-w-7xl mx-auto">
         {/* User Selection */}
         <div className="mb-4">
-          <select 
-            onChange={(e) => setCurrentUser(mockUsers.find(u => u._id === e.target.value) || null)}
+          {/* For testing purposes, you might have a login or user selection screen.
+              Here we assume the user is chosen and then stored in currentUser.
+              If not, you could fetch the logged-in user from your auth context. */}
+          <select
+            onChange={(e) =>
+              setCurrentUser({ _id: e.target.value, username: `User ${e.target.value}` })
+            }
             className="p-2 rounded-lg border"
           >
             <option value="">Select User</option>
-            {mockUsers.map(user => (
-              <option key={user._id} value={user._id}>{user.username}</option>
-            ))}
+            {/* Option values can be fetched from the backend too */}
+            <option value="1">User 1</option>
+            <option value="2">User 2</option>
+            <option value="3">User 3</option>
           </select>
         </div>
 
         <div className="bg-white rounded-lg shadow-md">
           <div className="grid grid-cols-4">
-            {/* Conversations Sidebar */}
+            {/* Left Sidebar */}
             <div className="col-span-1 border-r border-gray-200 p-4">
               <div className="flex items-center gap-2 mb-4">
                 <div className="relative flex-1">
@@ -158,22 +225,53 @@ const Messages = () => {
                 </button>
               </div>
 
-              <div className="space-y-1">
-                {conversations.map(convo => (
-                  <button
-                    key={convo._id}
-                    onClick={() => setSelectedConversation(convo._id)}
-                    className={`w-full text-left p-3 rounded-lg ${
-                      selectedConversation === convo._id
-                        ? 'bg-green-50 text-green-600'
-                        : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    {convo.name || convo.members
-                      .filter(member => member !== currentUser?._id)
-                      .join(', ')}
-                  </button>
-                ))}
+              {/* Contacts Section */}
+              <div className="mb-4">
+                <h2 className="text-lg font-bold">Contacts</h2>
+                <div className="space-y-2">
+                  {availableUsers.map((user) => {
+                    const isOnline = onlineUsers.some(
+                      (onlineUser) => onlineUser.userId === user._id
+                    );
+                    return (
+                      <div
+                        key={user._id}
+                        onClick={() => handleSelectContact(user)}
+                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-lg"
+                      >
+                        <div
+                          className={`w-3 h-3 rounded-full ${
+                            isOnline ? 'bg-green-500' : 'bg-gray-400'
+                          }`}
+                        />
+                        <span>{user.username}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Conversations Section */}
+              <div>
+                <h2 className="text-lg font-bold">Conversations</h2>
+                <div className="space-y-1">
+                  {conversations.map((convo) => (
+                    <button
+                      key={convo._id}
+                      onClick={() => setSelectedConversation(convo._id)}
+                      className={`w-full text-left p-3 rounded-lg ${
+                        selectedConversation === convo._id
+                          ? 'bg-green-50 text-green-600'
+                          : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      {convo.name ||
+                        convo.members
+                          .filter((member) => member !== currentUser?._id)
+                          .join(', ')}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -182,10 +280,12 @@ const Messages = () => {
               {selectedConversation ? (
                 <>
                   <div className="flex-1 p-4 overflow-y-auto space-y-4">
-                    {messages.map(message => (
+                    {messages.map((message) => (
                       <div
                         key={message._id}
-                        className={`flex ${message.senderId === currentUser?._id ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${
+                          message.senderId === currentUser?._id ? 'justify-end' : 'justify-start'
+                        }`}
                       >
                         <div
                           className={`max-w-[70%] rounded-lg p-3 ${
@@ -196,7 +296,10 @@ const Messages = () => {
                         >
                           {message.senderId !== currentUser?._id && (
                             <p className="text-xs font-medium mb-1">
-                              {mockUsers.find(u => u._id === message.senderId)?.username}
+                              {
+                                availableUsers.find((u) => u._id === message.senderId)
+                                  ?.username
+                              }
                             </p>
                           )}
                           <p>{message.text}</p>

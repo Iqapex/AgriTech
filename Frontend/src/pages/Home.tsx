@@ -164,7 +164,7 @@ export default function Home() {
           <div className="relative w-1/2">
             <input
               type="text"
-              placeholder="Search for lawyers all across the country"
+              placeholder="Search for vendors all across the country"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full p-2 pl-10 border rounded-md"

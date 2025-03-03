@@ -40,28 +40,22 @@ conversationRouter.get("/:userId", async (req, res) => {
 //get conversation of 2 users
 conversationRouter.get("/find/:firstuserId/:seconduserId", async (req, res) => {
     try {
-        const convo = await Conversation.findOne(
-            {
-                name: "",
-                members: { $all: [req.params.firstuserId, req.params.seconduserId] }
-            });
+        let convo = await Conversation.findOne({
+            name: "",
+            members: { $all: [req.params.firstuserId, req.params.seconduserId] }
+        });
 
         if (!convo) {
             const newConvo = new Conversation({
                 members: [req.params.firstuserId, req.params.seconduserId],
             });
-            try {
-                const savedConvo = await newConvo.save();
-                res.status(200).json(savedConvo);
-            } catch (err) {
-                res.status(500).json(err);
-            }
+            convo = await newConvo.save();
         }
         res.status(200).json(convo);
     } catch (err) {
         res.status(500).json(err);
     }
-})
+});
 
 conversationRouter.delete("/:id", async (req, res) => {
     try {

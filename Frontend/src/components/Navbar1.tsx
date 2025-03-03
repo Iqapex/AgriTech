@@ -23,13 +23,13 @@ const Navbar1 = () => {
     <nav className={`fixed w-full z-50 md:px-24 py-4 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center">
-          <a href="#" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <Leaf className="h-8 w-8 text-green-600" />
             <span className="font-bold text-xl md:text-2xl">
               <span className="text-green-700">IQ</span>
               <span className="text-green-500">PONICS</span>
             </span>
-          </a>
+          </Link>
 
           <div className="hidden md:flex items-center space-x-8">
             <a href="#about" className="text-gray-700 hover:text-green-600 transition-colors">About</a>
