@@ -66,13 +66,13 @@ const PremiumPage = () => {
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center bg-green-100 px-4 py-2 rounded-full mb-6">
             <Zap className="w-5 h-5 text-green-600 mr-2" />
-            <span className="font-medium text-green-600">Join 5000+ Trusted Doctors Worldwide</span>
+            <span className="font-medium text-green-600">Join 5000+ Trusted Farmers Worldwide</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Premium Healthcare Plans
+            Premium AgreTech Plans
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Choose the plan that best fits your medical needs and get instant access to top specialists.
+            Choose the plan that best fits your needs and get instant access to top specialists.
           </p>
         </div>
       </div>

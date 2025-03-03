@@ -40,7 +40,7 @@ const ExperienceModal: React.FC<ExperienceModalProps> = ({
           
           <input
             type="text"
-            placeholder="Preferred Legal Section"
+            placeholder="Preferred Farmer Section"
             className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             value={formData.preferredLegalSection}
             onChange={(e) => onChange({...formData, preferredLegalSection: e.target.value})}
@@ -48,7 +48,7 @@ const ExperienceModal: React.FC<ExperienceModalProps> = ({
           
           <input
             type="text"
-            placeholder="Number of Cases"
+            placeholder="Number of Orders"
             className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             value={formData.numberOfCases}
             onChange={(e) => onChange({...formData, numberOfCases: e.target.value})}
@@ -56,7 +56,7 @@ const ExperienceModal: React.FC<ExperienceModalProps> = ({
           
           <input
             type="text"
-            placeholder="Number of Cases Solved"
+            placeholder="Number of Orders Successfully Completed"
             className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             value={formData.numberOfCasesWon}
             onChange={(e) => onChange({...formData, numberOfCasesWon: e.target.value})}

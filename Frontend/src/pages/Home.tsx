@@ -4,77 +4,77 @@ import { Search, Star, User, MapPin } from "lucide-react";
 
 const lawyersData = [
   {
-    name: "Jim Henson",
+    name: "Amit Kumar",
     rating: 4.5,
     cases: 100,
     years: 14,
     about:
-      "Experienced lawyer in civil and corporate law, handling complex cases with great success.",
+      "Experienced vendor connecting farmers with markets, ensuring fair pricing.",
     location: "Guwahati",
   },
   {
-    name: "Joseph Snyder",
+    name: "Rajesh Verma",
     rating: 4.8,
     cases: 120,
     years: 16,
-    about: "Specialist in family and property law with a strong track record.",
+    about: "Specialist in organic produce distribution, helping farmers reach urban consumers.",
     location: "Gurugram",
   },
   {
-    name: "Jason Tahiti",
+    name: "Sunil Yadav",
     rating: 4.7,
     cases: 95,
     years: 12,
-    about: "Dedicated to criminal defense cases with a high success rate.",
+    about: "Dedicated to streamlining the supply chain for fresh fruits and vegetables.",
     location: "Goa",
   },
   {
-    name: "Rajesh Sharma",
+    name: "Pooja Sharma",
     rating: 4.9,
     cases: 150,
     years: 20,
     about:
-      "Expert in constitutional and corporate law with high-profile cases.",
+      "Expert in bulk grain procurement, supporting small-scale farmers with stable demand.",
     location: "Delhi",
   },
   {
-    name: "Ananya Iyer",
+    name: "Neeraj Patel",
     rating: 4.6,
     cases: 110,
     years: 15,
-    about: "Skilled in intellectual property and patent law.",
+    about: "Works closely with dairy farmers to distribute fresh milk and dairy products.",
     location: "Bangalore",
   },
   {
-    name: "Vikram Patel",
+    name: "Vikram Singh",
     rating: 4.4,
     cases: 130,
     years: 18,
-    about: "Focused on criminal law and high-stakes litigation.",
+    about: "Focused on fair trade practices, ensuring farmers get the best market value.",
     location: "Ahmedabad",
   },
   {
-    name: "Neha Verma",
+    name: "Anita Desai",
     rating: 4.7,
     cases: 125,
     years: 14,
-    about: "Leading advocate in family and divorce law.",
+    about: "Leading vendor in spice distribution, bringing farm-fresh spices to the market.",
     location: "Mumbai",
   },
   {
-    name: "Siddharth Reddy",
+    name: "Suresh Reddy",
     rating: 4.5,
     cases: 90,
     years: 10,
-    about: "Expert in real estate and property disputes.",
+    about: "Expert in handling direct-to-consumer sales for farm-fresh vegetables.",
     location: "Hyderabad",
   },
   {
-    name: "Priya Desai",
+    name: "Meera Joshi",
     rating: 4.8,
     cases: 105,
     years: 13,
-    about: "Known for her work in human rights and social justice cases.",
+    about: "Known for promoting sustainable farming products and fair pricing.",
     location: "Pune",
   },
   {
@@ -82,7 +82,7 @@ const lawyersData = [
     rating: 4.3,
     cases: 80,
     years: 9,
-    about: "Strong background in taxation and financial law.",
+    about: "Strong network in wholesale grain markets, supporting local farmers.",
     location: "Chennai",
   },
   {
@@ -90,7 +90,7 @@ const lawyersData = [
     rating: 4.9,
     cases: 140,
     years: 22,
-    about: "A veteran lawyer specializing in business and corporate law.",
+    about: "A veteran in agricultural logistics, ensuring smooth farm-to-market delivery.",
     location: "Jaipur",
   },
   {
@@ -98,10 +98,11 @@ const lawyersData = [
     rating: 4.6,
     cases: 115,
     years: 17,
-    about: "Extensive experience in cyber law and technology disputes.",
+    about: "Extensive experience in organic and pesticide-free farming distribution.",
     location: "Kolkata",
   },
 ];
+
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -147,7 +148,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-green-50 pt-24 px-4">
+    <div className="min-h-screen bg-green-50 py-24 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex gap-4 mb-6">
           <div className="relative w-1/4">
@@ -210,7 +211,7 @@ export default function Home() {
                   <div className="text-xl font-bold text-green-600">
                     {lawyer.cases}
                   </div>
-                  <div className="text-sm text-gray-600">Cases</div>
+                  <div className="text-sm text-gray-600">Orders</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl font-bold text-green-600">

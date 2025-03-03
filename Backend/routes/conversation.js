@@ -17,7 +17,7 @@ conversationRouter.post("/", async (req, res) => {
 });
 
 //create a group conversation
-conversationRouter.post("/group/", async (req, res) => {
+conversationRouter.post("/group", async (req, res) => {
     const newConvo = new Conversation(req.body);
     try {
         const savedConvo = await newConvo.save();
@@ -63,7 +63,7 @@ conversationRouter.get("/find/:firstuserId/:seconduserId", async (req, res) => {
     }
 })
 
-conversationRouter.delete(`/:id`, async (req, res) => {
+conversationRouter.delete("/:id", async (req, res) => {
     try {
         await Message.deleteMany({ conversationId: req.params.id });
         await Conversation.deleteOne({ _id: req.params.id })

@@ -20,17 +20,17 @@ export default function Feed() {
   const [posts, setPosts] = useState<Post[]>([
     {
       id: 1,
-      user: "Jim Morgan",
-      content: "Outside Supreme Court of the United States of America in Washington D.C.",
-      image: "https://picsum.photos/600/400?random=1",
+      user: "Madan Lal",
+      content: "Farmer in the countryside",
+      image: "https://thumbs.dreamstime.com/b/indian-farmer-sickles-his-field-adult-agricultural-agriculture-asia-asian-cell-countryside-crop-disease-farmers-farming-150369345.jpg",
       likes: 566,
       comments: ["Amazing place!", "I visited last year, loved it."]
     },
     {
       id: 2,
       user: "Rashmita Singh",
-      content: "Finally a lawyer",
-      image: "https://picsum.photos/600/400?random=2",
+      content: "Finally a Vegetable Garden!",
+      image: "https://blog.nurserylive.com/wp-content/uploads/2016/06/CALENDAR-GARDENING-VEG-01.jpg",
       likes: 302,
       comments: ["Congratulations!", "Well deserved!"]
     }
@@ -40,11 +40,11 @@ export default function Feed() {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [newComment, setNewComment] = useState("");
   const [contacts] = useState<Contact[]>([
-    { id: 1, name: "Alice Smith" },
-    { id: 2, name: "Bob Johnson" },
-    { id: 3, name: "Charlie Brown" },
-    { id: 4, name: "Diana Miller" },
-    { id: 5, name: "Evan Wright" },
+    { id: 1, name: "Amit Thakur" },
+    { id: 2, name: "Chandan Kumar" },
+    { id: 3, name: "Ashok Saha" },
+    { id: 4, name: "Deewakar Sharma" },
+    { id: 5, name: "Suresh Ray" },
   ]);
 
   const handlePost = () => {
@@ -104,7 +104,7 @@ export default function Feed() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-green-50 gap-8">
+    <div className="flex justify-center items-center min-h-screen pt-24 bg-green-50 gap-8">
   {/* Left Sidebar - Profile Info */}
   <div className="w-80 bg-white shadow-sm p-6 h-auto top-0 rounded">
     <div className="flex items-center space-x-4 mb-8">
@@ -113,8 +113,8 @@ export default function Feed() {
         className="w-12 h-12 rounded-full border-2 border-green-500 p-0.5"
       />
       <div>
-        <p className="font-bold text-gray-900">John Doe</p>
-        <p className="text-sm text-gray-500">Legal Consultant</p>
+        <p className="font-bold text-gray-900">Kishor Ram</p>
+        <p className="text-sm text-gray-500">Farmer Consultant</p>
       </div>
     </div>
     

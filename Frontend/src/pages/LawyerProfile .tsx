@@ -4,28 +4,140 @@ import { Star, User, MapPin, Check, Plus } from "lucide-react";
 
 const lawyersData = [
   {
-    name: "Jim Henson",
+    name: "Amit Kumar",
     rating: 4.5,
     cases: 100,
     years: 14,
-    about: "Experienced lawyer in civil and corporate law, handling complex cases with great success.",
+    about: "Experienced vendor specializing in bulk agricultural produce, ensuring fair trade for farmers.",
     location: "Guwahati",
-    education: "Harvard Law School",
-    experience: "14 years in corporate law",
-    contacts: ["Ajay Gupta", "Hrithik Ghanty", "Soumya Sen"]
+    education: "Farmer College of Agriculture",
+    experience: "14 years in farming and produce distribution",
+    contacts: ["Ajay Gupta", "Hrithik Ghanty", "Soumya Sen"],
   },
   {
-    name: "Joseph Snyder",
+    name: "Rajesh Verma",
     rating: 4.8,
     cases: 120,
     years: 16,
-    about: "Specialist in family and property law with a strong track record.",
+    about: "Specialist in organic produce distribution, helping farmers reach urban consumers.",
     location: "Gurugram",
-    education: "Yale Law School",
-    experience: "16 years in family law",
-    contacts: ["Michael Scott", "Dwight Schrute", "Pam Beesly"]
-  }
+    education: "National Institute of Organic Farming",
+    experience: "16 years in organic farming",
+    contacts: ["Meham Chaudhary", "Abhishek Sharma", "Sunny Kumar"],
+  },
+  {
+    name: "Sunil Yadav",
+    rating: 4.7,
+    cases: 95,
+    years: 12,
+    about: "Dedicated to streamlining the supply chain for fresh fruits and vegetables.",
+    location: "Goa",
+    education: "Agricultural Business Management Institute",
+    experience: "12 years in fresh produce distribution",
+    contacts: ["Rahul Tiwari", "Nikhil Chauhan", "Pooja Agarwal"],
+  },
+  {
+    name: "Pooja Sharma",
+    rating: 4.9,
+    cases: 150,
+    years: 20,
+    about: "Expert in bulk grain procurement, supporting small-scale farmers with stable demand.",
+    location: "Delhi",
+    education: "Indian Agricultural Research Institute",
+    experience: "20 years in grain procurement and logistics",
+    contacts: ["Anil Mehta", "Shruti Das", "Manoj Bansal"],
+  },
+  {
+    name: "Neeraj Patel",
+    rating: 4.6,
+    cases: 110,
+    years: 15,
+    about: "Works closely with dairy farmers to distribute fresh milk and dairy products.",
+    location: "Bangalore",
+    education: "Dairy Science Institute",
+    experience: "15 years in dairy farming and milk distribution",
+    contacts: ["Karthik Nair", "Prerna Singh", "Deepak Sinha"],
+  },
+  {
+    name: "Vikram Singh",
+    rating: 4.4,
+    cases: 130,
+    years: 18,
+    about: "Focused on fair trade practices, ensuring farmers get the best market value.",
+    location: "Ahmedabad",
+    education: "Institute of Agricultural Marketing",
+    experience: "18 years in agricultural trade and logistics",
+    contacts: ["Raj Malhotra", "Sonia Kapoor", "Amit Khanna"],
+  },
+  {
+    name: "Anita Desai",
+    rating: 4.7,
+    cases: 125,
+    years: 14,
+    about: "Leading vendor in spice distribution, bringing farm-fresh spices to the market.",
+    location: "Mumbai",
+    education: "Spice Board of India Certification",
+    experience: "14 years in spice trade and export",
+    contacts: ["Suresh Mehta", "Anjali Rao", "Devika Nanda"],
+  },
+  {
+    name: "Suresh Reddy",
+    rating: 4.5,
+    cases: 90,
+    years: 10,
+    about: "Expert in handling direct-to-consumer sales for farm-fresh vegetables.",
+    location: "Hyderabad",
+    education: "Horticulture University",
+    experience: "10 years in vegetable farming and retail",
+    contacts: ["Ravi Teja", "Bhavani Shankar", "Jaya Krishna"],
+  },
+  {
+    name: "Meera Joshi",
+    rating: 4.8,
+    cases: 105,
+    years: 13,
+    about: "Known for promoting sustainable farming products and fair pricing.",
+    location: "Pune",
+    education: "Institute of Sustainable Agriculture",
+    experience: "13 years in sustainable farming practices",
+    contacts: ["Yashwant Jadhav", "Sneha Kulkarni", "Rohan Deshpande"],
+  },
+  {
+    name: "Arjun Mehta",
+    rating: 4.3,
+    cases: 80,
+    years: 9,
+    about: "Strong network in wholesale grain markets, supporting local farmers.",
+    location: "Chennai",
+    education: "Tamil Nadu Agricultural University",
+    experience: "9 years in grain wholesaling",
+    contacts: ["Naveen Kumar", "Varsha Iyer", "Kiran Babu"],
+  },
+  {
+    name: "Kiran Chauhan",
+    rating: 4.9,
+    cases: 140,
+    years: 22,
+    about: "A veteran in agricultural logistics, ensuring smooth farm-to-market delivery.",
+    location: "Jaipur",
+    education: "National Institute of Agricultural Logistics",
+    experience: "22 years in farm-to-market supply chain",
+    contacts: ["Shubham Rathore", "Dinesh Gupta", "Priyanka Sharma"],
+  },
+  {
+    name: "Roshni Malhotra",
+    rating: 4.6,
+    cases: 115,
+    years: 17,
+    about: "Extensive experience in organic and pesticide-free farming distribution.",
+    location: "Kolkata",
+    education: "Organic Farming Research Institute",
+    experience: "17 years in organic farming and distribution",
+    contacts: ["Alok Banerjee", "Neha Sen", "Vivek Roy"],
+  },
 ];
+
+
 
 export default function LawyerProfile() {
   const { name } = useParams();
@@ -110,10 +222,10 @@ export default function LawyerProfile() {
           {/* Right Column */}
           <div className="space-y-6">
             <div className="bg-gray-50 p-6 rounded-xl transition hover:shadow-md">
-              <h3 className="font-semibold mb-4">Case Statistics</h3>
+              <h3 className="font-semibold mb-4">Orders Statistics</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span>Total Cases</span>
+                  <span>Total orders</span>
                   <span className="font-semibold text-green-600">{lawyer.cases}</span>
                 </div>
                 <div className="flex justify-between items-center">

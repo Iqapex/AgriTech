@@ -32,7 +32,7 @@ const ProfessionalModal: React.FC<ProfessionalModalProps> = ({
         <div className="space-y-3">
           <input
             type="text"
-            placeholder="Bar Council Registration Number"
+            placeholder="Storage Registration Number"
             className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             value={formData.barCouncilNumber}
             onChange={(e) => onChange({...formData, barCouncilNumber: e.target.value})}
@@ -40,7 +40,7 @@ const ProfessionalModal: React.FC<ProfessionalModalProps> = ({
           
           <input
             type="text"
-            placeholder="Area of practice"
+            placeholder="Area of Lands"
             className="w-full p-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             value={formData.practiceArea}
             onChange={(e) => onChange({...formData, practiceArea: e.target.value})}
@@ -66,7 +66,7 @@ const ProfessionalModal: React.FC<ProfessionalModalProps> = ({
         <div className="mt-6">
           <button
             onClick={onSubmit}
-            className="w-full bg-sky-500 text-white py-2 rounded-md hover:bg-green-600 transition"
+            className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
           >
             Enter
           </button>
