@@ -27,6 +27,7 @@ export default function Login({
       });
   
       if (response) {
+        console.log("Token from server:", response.token); // Check token format here
         localStorage.setItem("authToken", response.token);
         setIsAuth(true);
         navigate("/home");
@@ -40,6 +41,7 @@ export default function Login({
       );
     }
   };
+  
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

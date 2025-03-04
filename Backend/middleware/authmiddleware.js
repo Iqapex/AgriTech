@@ -2,20 +2,19 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Ensure you import the User model
 
 const verifyAccessToken = (req, res, next) => {
-  const token = req.cookies.accessToken;
+  // Check for token in cookies or in the Authorization header
+  const token =
+    req.cookies.accessToken ||
+    (req.headers.authorization && req.headers.authorization.split(' ')[1]);
 
-  // Check if the token exists
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized: No access token provided' });
   }
 
-  // Verify the token
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       return res.status(403).json({ message: 'Forbidden: Invalid or expired access token' });
     }
-
-    // Attach the user to the request object
     req.user = user;
     next();
   });

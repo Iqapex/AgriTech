@@ -101,7 +101,7 @@ authRouter.post('/login', async (req, res) => {
         maxAge: 604800000
       });
   
-      res.status(200).json({ userData });
+      res.status(200).json({ userData, token: accessToken });
     } catch (err) {
       console.error("Login error:", err);
       res.status(500).json({ message: 'Server error' });
