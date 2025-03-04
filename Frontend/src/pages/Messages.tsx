@@ -85,7 +85,7 @@ const Messages = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await fetchData('/api/users');
+        const data = await fetchData('/users');
         // Exclude current user from the list
         const filteredUsers = data.filter((u: User) => u._id !== currentUser?._id);
         setAvailableUsers(filteredUsers);
@@ -104,7 +104,7 @@ const Messages = () => {
     const fetchConversations = async () => {
       if (currentUser?._id) {
         try {
-          const data = await fetchData(`/api/conversation/${currentUser._id}`);
+          const data = await fetchData(`/conversation/${currentUser._id}`);
           setConversations(data);
         } catch (error) {
           console.error('Failed to fetch conversations:', error);
@@ -119,7 +119,7 @@ const Messages = () => {
     const fetchMessages = async () => {
       if (selectedConversation) {
         try {
-          const data = await fetchData(`/api/message/${selectedConversation}`);
+          const data = await fetchData(`/message/${selectedConversation}`);
           setMessages(data);
         } catch (error) {
           console.error('Failed to fetch messages:', error);
@@ -160,7 +160,7 @@ const Messages = () => {
 
     try {
       // Save message to the database via API
-      const savedMessage = await fetchData('/api/message', 'POST', messageData);
+      const savedMessage = await fetchData('/message', 'POST', messageData);
       setMessages(prev => [...prev, savedMessage]);
       setNewMessage('');
 

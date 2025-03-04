@@ -1,12 +1,21 @@
-// middleware/auth.js
 const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Ensure you import the User model
 
 const verifyAccessToken = (req, res, next) => {
   const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
+  // Check if the token exists
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized: No access token provided' });
+  }
+
+  // Verify the token
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Forbidden' });
+    if (err) {
+      return res.status(403).json({ message: 'Forbidden: Invalid or expired access token' });
+    }
+
+    // Attach the user to the request object
     req.user = user;
     next();
   });
@@ -14,29 +23,47 @@ const verifyAccessToken = (req, res, next) => {
 
 const handleRefreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.status(401).json({ message: 'Unauthorized' });
 
-  const user = await User.findOne({ refreshToken });
-  if (!user) return res.status(403).json({ message: 'Forbidden' });
+  // Check if the refresh token exists
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'Unauthorized: No refresh token provided' });
+  }
 
-  jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, decoded) => {
-    if (err || user._id !== decoded.id) return res.status(403).json({ message: 'Forbidden' });
-    
-    const accessToken = jwt.sign(
-      { id: user._id, isLawyer: user.isLawyer },
-      process.env.JWT_SECRET,
-      { expiresIn: '15m' }
-    );
+  try {
+    // Find the user associated with the refresh token
+    const user = await User.findOne({ refreshToken });
+    if (!user) {
+      return res.status(403).json({ message: 'Forbidden: Invalid refresh token' });
+    }
 
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 900000
+    // Verify the refresh token
+    jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, decoded) => {
+      if (err || user._id.toString() !== decoded.id) {
+        return res.status(403).json({ message: 'Forbidden: Invalid or expired refresh token' });
+      }
+
+      // Generate a new access token
+      const accessToken = jwt.sign(
+        { id: user._id, isLawyer: user.isLawyer },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' } // Access token expires in 15 minutes
+      );
+
+      // Set the new access token in a cookie
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Ensure cookies are only sent over HTTPS in production
+        sameSite: 'strict',
+        maxAge: 900000 // 15 minutes in milliseconds
+      });
+
+      // Send the new access token in the response
+      res.json({ accessToken });
     });
-
-    res.json({ accessToken });
-  });
+  } catch (err) {
+    console.error('Error in handleRefreshToken:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 module.exports = { verifyAccessToken, handleRefreshToken };
