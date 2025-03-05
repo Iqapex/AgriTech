@@ -45,7 +45,7 @@ const handleRefreshToken = async (req, res) => {
       const accessToken = jwt.sign(
         { id: user._id, isLawyer: user.isLawyer },
         process.env.JWT_SECRET,
-        { expiresIn: '15m' } // Access token expires in 15 minutes
+        { expiresIn: '1d' } // Access token expires in 15 minutes
       );
 
       // Set the new access token in a cookie
@@ -53,7 +53,7 @@ const handleRefreshToken = async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Ensure cookies are only sent over HTTPS in production
         sameSite: 'strict',
-        maxAge: 900000 // 15 minutes in milliseconds
+        maxAge: 86400000 // 15 minutes in milliseconds
       });
 
       // Send the new access token in the response

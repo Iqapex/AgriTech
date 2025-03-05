@@ -4,8 +4,7 @@ import EducationModal from '../components/EducationModal';
 import IntroductionModal from '../components/IntroductionModal';
 import ProfessionalModal from '../components/ProfessionalModal';
 import ExperienceModal from '../components/ExperienceModal';
-import { useApi } from '../hooks/useApi';
-import {jwtDecode} from 'jwt-decode'; // Use default export
+import {jwtDecode} from 'jwt-decode';
 
 // Types for profile data
 interface Education {
@@ -34,23 +33,21 @@ interface Experience {
 }
 
 interface ProfileData {
-  name: string;
-  about: string;
-  dob?: string;
-  avatar?: string;
+  firstName: string;
+  lastName: string;
+  summary: string;
+  birthDate?: string;
+  profilePic?: string;
   education: Education[];
   professional: Professional;
   experience: Experience[];
 }
 
 const ProfileInfo: React.FC = () => {
-  const { fetchData, loading, error } = useApi();
   const [userId, setUserId] = useState<string>('');
-  
-  // Get the authentication token from localStorage
   const authToken = localStorage.getItem('authToken');
 
-  // Decode the JWT token to get the user ID and log token details
+  // Decode the token to get user ID
   useEffect(() => {
     if (authToken) {
       if (authToken.split('.').length !== 3) {
@@ -69,11 +66,12 @@ const ProfileInfo: React.FC = () => {
     }
   }, [authToken]);
 
-  // Initial profile data state
+  // Profile state now holds first and last name separately
   const [profileData, setProfileData] = useState<ProfileData>({
-    name: '',
-    about: '',
-    avatar: '',
+    firstName: '',
+    lastName: '',
+    summary: '',
+    profilePic: '',
     education: [],
     professional: {} as Professional,
     experience: [],
@@ -85,12 +83,13 @@ const ProfileInfo: React.FC = () => {
   const [showProfessionalModal, setShowProfessionalModal] = useState(false);
   const [showExperienceModal, setShowExperienceModal] = useState(false);
 
-  // Form data states
+  // Form state for Introduction
   const [introForm, setIntroForm] = useState({
-    name: '',
-    dob: '',
-    about: '',
-    avatar: '',
+    firstName: '',
+    lastName: '',
+    birthDate: '',
+    summary: '',
+    profilePic: '',
   });
 
   const [educationForm, setEducationForm] = useState<Education>({
@@ -118,7 +117,7 @@ const ProfileInfo: React.FC = () => {
     present: false,
   });
 
-  // Fetch profile data on component mount with correct API endpoint
+  // Fetch profile data when userId is set
   useEffect(() => {
     const loadProfileData = async () => {
       if (!userId) {
@@ -126,11 +125,14 @@ const ProfileInfo: React.FC = () => {
         return;
       }
       try {
-        const data = await fetchData(`/users/${userId}`, "GET", {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+        const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${authToken}` },
         });
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile data');
+        }
+        const data = await response.json();
         console.log('Profile data fetched:', data);
         setProfileData(data);
       } catch (err) {
@@ -141,51 +143,62 @@ const ProfileInfo: React.FC = () => {
     if (userId) {
       loadProfileData();
     }
-  }, [userId, authToken, fetchData]);
+  }, [userId, authToken]);
 
-  // Handle form submissions using the correct API endpoint and headers
+  // Handle intro form submission using fetch
   const handleIntroSubmit = async () => {
-    const [firstname, lastname] = introForm.name.split(' ');
-
     try {
-      const response = await fetchData(`/users/${userId}`, 'PUT', {
+      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstname,
-          lastname,
-          birthDate: introForm.dob,
-          summary: introForm.about,
-          profilePic: introForm.avatar,
+          firstName: introForm.firstName,
+          lastName: introForm.lastName,
+          birthDate: introForm.birthDate,
+          summary: introForm.summary,
+          profilePic: introForm.profilePic,
         }),
       });
-      console.log('Intro update response:', response);
+      if (!response.ok) {
+        throw new Error('Failed to update introduction');
+      }
+      const result = await response.json();
+      console.log('Intro update response:', result);
       setProfileData((prev) => ({
         ...prev,
-        name: introForm.name,
-        dob: introForm.dob,
-        about: introForm.about,
-        avatar: introForm.avatar,
+        firstName: introForm.firstName,
+        lastName: introForm.lastName,
+        birthDate: introForm.birthDate,
+        summary: introForm.summary,
+        profilePic: introForm.profilePic,
       }));
       setShowIntroModal(false);
     } catch (err) {
       console.error('Failed to save intro:', err);
     }
   };
-  
+
   const handleEducationSubmit = async () => {
     const newEducation = { ...educationForm };
     try {
-      const response = await fetchData(`/users/${userId}`, 'PUT', {
+      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ education: [...(profileData.education || []), newEducation] }),
+        body: JSON.stringify({
+          education: [...(profileData.education || []), newEducation],
+        }),
       });
-      console.log('Education update response:', response);
+      if (!response.ok) {
+        throw new Error('Failed to update education');
+      }
+      const result = await response.json();
+      console.log('Education update response:', result);
       setProfileData((prev) => ({
         ...prev,
         education: [...(prev.education || []), newEducation],
@@ -195,18 +208,23 @@ const ProfileInfo: React.FC = () => {
       console.error('Failed to save education:', err);
     }
   };
-  
+
   const handleProfessionalSubmit = async () => {
     const updatedProfessional = { ...professionalForm };
     try {
-      const response = await fetchData(`/users/${userId}`, 'PUT', {
+      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedProfessional),
       });
-      console.log('Professional update response:', response);
+      if (!response.ok) {
+        throw new Error('Failed to update professional info');
+      }
+      const result = await response.json();
+      console.log('Professional update response:', result);
       setProfileData((prev) => ({
         ...prev,
         professional: updatedProfessional,
@@ -216,18 +234,25 @@ const ProfileInfo: React.FC = () => {
       console.error('Failed to save professional info:', err);
     }
   };
-  
+
   const handleExperienceSubmit = async () => {
     const newExperience = { ...experienceForm };
     try {
-      const response = await fetchData(`/users/${userId}`, 'PUT', {
+      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ experience: [...(profileData.experience || []), newExperience] }),
+        body: JSON.stringify({
+          experience: [...(profileData.experience || []), newExperience],
+        }),
       });
-      console.log('Experience update response:', response);
+      if (!response.ok) {
+        throw new Error('Failed to update experience');
+      }
+      const result = await response.json();
+      console.log('Experience update response:', result);
       setProfileData((prev) => ({
         ...prev,
         experience: [...(prev.experience || []), newExperience],
@@ -237,32 +262,38 @@ const ProfileInfo: React.FC = () => {
       console.error('Failed to save experience:', err);
     }
   };
-  
-  // Handle image upload (ensure the endpoint matches your server configuration)
+
+  // Handle image upload using fetch with FormData
   const handleImageUpload = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const response = await fetchData('/upload', 'POST', {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${authToken}` },
         body: formData,
       });
-      console.log('Image upload response:', response);
-      setProfileData((prev) => ({ ...prev, avatar: response.url }));
-      await fetchData(`/users/${userId}`, 'PUT', {
+      if (!response.ok) {
+        throw new Error('Image upload failed');
+      }
+      const result = await response.json();
+      if (!result.url) {
+        throw new Error('Image upload failed');
+      }
+      // Update UI optimistically
+      setProfileData((prev) => ({ ...prev, profilePic: result.url }));
+      await fetch(`http://localhost:5000/api/users/${userId}`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ profilePic: response.url }),
+        body: JSON.stringify({ profilePic: result.url }),
       });
     } catch (err) {
       console.error('Upload failed:', err);
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-green-100 p-4 pt-24 px-24">
@@ -274,7 +305,6 @@ const ProfileInfo: React.FC = () => {
               <User className="text-white" size={32} />
             </div>
           </div>
-
           <div className="space-y-2">
             <div className="flex justify-between items-center text-green-600 py-1 border-b">
               <span>Introduction</span>
@@ -313,12 +343,11 @@ const ProfileInfo: React.FC = () => {
             >
               <Pencil size={18} />
             </button>
-
             <div className="flex flex-col items-center">
-              {profileData.avatar ? (
+              {profileData.profilePic ? (
                 <img
-                  src={profileData.avatar}
-                  alt={profileData.name}
+                  src={profileData.profilePic}
+                  alt={`${profileData.firstName} ${profileData.lastName}`}
                   className="w-24 h-24 rounded-full object-cover mb-4"
                 />
               ) : (
@@ -326,12 +355,11 @@ const ProfileInfo: React.FC = () => {
                   <User className="text-white" size={40} />
                 </div>
               )}
-
               <h2 className="text-xl font-semibold text-green-700 mb-2">
-                {profileData.name || 'Name'}
+                {profileData.firstName || 'First Name'} {profileData.lastName || 'Last Name'}
               </h2>
               <p className="text-center text-gray-600 max-w-2xl">
-                {profileData.about || 'About'}
+                {profileData.summary || 'About'}
               </p>
             </div>
           </div>
@@ -340,14 +368,10 @@ const ProfileInfo: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm relative">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-green-700">Education</h3>
-              <button
-                onClick={() => setShowEducationModal(true)}
-                className="text-green-500"
-              >
+              <button onClick={() => setShowEducationModal(true)} className="text-green-500">
                 <Pencil size={18} />
               </button>
             </div>
-
             {profileData.education.length > 0 ? (
               <div className="space-y-4">
                 {profileData.education.map((edu, index) => (
@@ -371,14 +395,10 @@ const ProfileInfo: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm relative">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-green-700">Professional</h3>
-              <button
-                onClick={() => setShowProfessionalModal(true)}
-                className="text-green-500"
-              >
+              <button onClick={() => setShowProfessionalModal(true)} className="text-green-500">
                 <Pencil size={18} />
               </button>
             </div>
-
             {profileData.professional ? (
               <div className="space-y-4">
                 <div className="border-l-4 border-green-500 pl-4">
@@ -415,14 +435,10 @@ const ProfileInfo: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-sm relative">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-green-700">Experience</h3>
-              <button
-                onClick={() => setShowExperienceModal(true)}
-                className="text-green-500"
-              >
+              <button onClick={() => setShowExperienceModal(true)} className="text-green-500">
                 <Pencil size={18} />
               </button>
             </div>
-
             {profileData.experience.length > 0 ? (
               <div className="space-y-4">
                 {profileData.experience.map((exp, index) => (
@@ -454,7 +470,6 @@ const ProfileInfo: React.FC = () => {
         onSubmit={handleIntroSubmit}
         onImageUpload={handleImageUpload}
       />
-
       <EducationModal
         isOpen={showEducationModal}
         onClose={() => setShowEducationModal(false)}
@@ -462,7 +477,6 @@ const ProfileInfo: React.FC = () => {
         onChange={setEducationForm}
         onSubmit={handleEducationSubmit}
       />
-
       <ProfessionalModal
         isOpen={showProfessionalModal}
         onClose={() => setShowProfessionalModal(false)}
@@ -470,7 +484,6 @@ const ProfileInfo: React.FC = () => {
         onChange={setProfessionalForm}
         onSubmit={handleProfessionalSubmit}
       />
-
       <ExperienceModal
         isOpen={showExperienceModal}
         onClose={() => setShowExperienceModal(false)}

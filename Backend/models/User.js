@@ -19,6 +19,13 @@ const education = new mongoose.Schema({
     present: Boolean,
 });
 
+const professional = new mongoose.Schema({
+    barCouncilNumber: String,
+    practiceArea: String,
+    extraCertificates: String,
+    languages: String,
+});
+
 const rating = new mongoose.Schema({
     userId: String,
     rating: String,
@@ -52,6 +59,7 @@ const UserSchema = new mongoose.Schema({
     },
     education: [education],
     experience: [experience],
+    professional: [professional],
     summary: {
         type: String,
         default: "",
