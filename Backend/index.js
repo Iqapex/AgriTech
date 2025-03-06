@@ -35,6 +35,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/posts', require('./routes/posts'));
 app.use('/api/conversation', require('./routes/conversation'));
 app.use('/api/message', require('./routes/message'));
+app.use("/api/upload", require("./routes/upload"));
  // Authentication routes
 
 // Start the server

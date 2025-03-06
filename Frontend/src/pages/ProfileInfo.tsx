@@ -33,13 +33,13 @@ interface Experience {
 }
 
 interface ProfileData {
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   summary: string;
   birthDate?: string;
   profilePic?: string;
   education: Education[];
-  professional: Professional;
+  professional: Professional[];
   experience: Experience[];
 }
 
@@ -68,12 +68,12 @@ const ProfileInfo: React.FC = () => {
 
   // Profile state now holds first and last name separately
   const [profileData, setProfileData] = useState<ProfileData>({
-    firstName: '',
-    lastName: '',
+    firstname: '',
+    lastname: '',
     summary: '',
     profilePic: '',
     education: [],
-    professional: {} as Professional,
+    professional: [],
     experience: [],
   });
 
@@ -148,38 +148,47 @@ const ProfileInfo: React.FC = () => {
   // Handle intro form submission using fetch
   const handleIntroSubmit = async () => {
     try {
+      // Map form keys to schema keys
+      const payload = {
+        firstname: introForm.firstName, 
+        lastname: introForm.lastName,  
+        birthDate: introForm.birthDate,
+        summary: introForm.summary,
+        profilePic: introForm.profilePic,
+      };
+  
       const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          firstName: introForm.firstName,
-          lastName: introForm.lastName,
-          birthDate: introForm.birthDate,
-          summary: introForm.summary,
-          profilePic: introForm.profilePic,
-        }),
+        body: JSON.stringify(payload),
       });
+  
       if (!response.ok) {
         throw new Error('Failed to update introduction');
       }
+  
       const result = await response.json();
       console.log('Intro update response:', result);
+  
+      // Update local state to reflect the changes
       setProfileData((prev) => ({
         ...prev,
-        firstName: introForm.firstName,
-        lastName: introForm.lastName,
+        firstname: introForm.firstName,
+        lastname: introForm.lastName,
         birthDate: introForm.birthDate,
         summary: introForm.summary,
         profilePic: introForm.profilePic,
       }));
+  
       setShowIntroModal(false);
     } catch (err) {
       console.error('Failed to save intro:', err);
     }
   };
+  
 
   const handleEducationSubmit = async () => {
     const newEducation = { ...educationForm };
@@ -210,7 +219,7 @@ const ProfileInfo: React.FC = () => {
   };
 
   const handleProfessionalSubmit = async () => {
-    const updatedProfessional = { ...professionalForm };
+    const newProfessional = { ...professionalForm };
     try {
       const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
         method: 'PUT',
@@ -218,7 +227,7 @@ const ProfileInfo: React.FC = () => {
           Authorization: `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedProfessional),
+        body: JSON.stringify({ professional: [newProfessional] }),
       });
       if (!response.ok) {
         throw new Error('Failed to update professional info');
@@ -227,13 +236,17 @@ const ProfileInfo: React.FC = () => {
       console.log('Professional update response:', result);
       setProfileData((prev) => ({
         ...prev,
-        professional: updatedProfessional,
+        professional: [newProfessional],
       }));
       setShowProfessionalModal(false);
     } catch (err) {
       console.error('Failed to save professional info:', err);
     }
   };
+  
+  
+  
+  
 
   const handleExperienceSubmit = async () => {
     const newExperience = { ...experienceForm };
@@ -347,7 +360,7 @@ const ProfileInfo: React.FC = () => {
               {profileData.profilePic ? (
                 <img
                   src={profileData.profilePic}
-                  alt={`${profileData.firstName} ${profileData.lastName}`}
+                  alt={`${profileData.firstname} ${profileData.lastname}`}
                   className="w-24 h-24 rounded-full object-cover mb-4"
                 />
               ) : (
@@ -356,7 +369,7 @@ const ProfileInfo: React.FC = () => {
                 </div>
               )}
               <h2 className="text-xl font-semibold text-green-700 mb-2">
-                {profileData.firstName || 'First Name'} {profileData.lastName || 'Last Name'}
+                {profileData.firstname || 'First Name'} {profileData.lastname || 'Last Name'}
               </h2>
               <p className="text-center text-gray-600 max-w-2xl">
                 {profileData.summary || 'About'}
@@ -373,13 +386,13 @@ const ProfileInfo: React.FC = () => {
               </button>
             </div>
             {profileData.education.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-4 text-lg">
                 {profileData.education.map((edu, index) => (
                   <div key={index} className="border-l-4 border-green-500 pl-4">
-                    <h4 className="font-medium text-green-700">{edu.institute}</h4>
-                    <p className="text-sm text-gray-600">{edu.degreeName}</p>
+                    <h4 className="font-medium text-green-700">Institute Name : {edu.institute}</h4>
+                    <p className="text-sm text-gray-600">Degree Name : {edu.degreeName}</p>
                     <p className="text-xs text-gray-500">
-                      {edu.startDate} - {edu.present ? 'Present' : edu.endDate}
+                      Duration : {edu.startDate} - {edu.present ? 'Present' : edu.endDate}
                     </p>
                   </div>
                 ))}
@@ -399,30 +412,32 @@ const ProfileInfo: React.FC = () => {
                 <Pencil size={18} />
               </button>
             </div>
-            {profileData.professional ? (
-              <div className="space-y-4">
-                <div className="border-l-4 border-green-500 pl-4">
-                  {profileData.professional.barCouncilNumber && (
-                    <p className="text-sm text-gray-600">
-                      Bar Council Number: {profileData.professional.barCouncilNumber}
-                    </p>
-                  )}
-                  {profileData.professional.practiceArea && (
-                    <p className="text-sm text-gray-600">
-                      Practice Area: {profileData.professional.practiceArea}
-                    </p>
-                  )}
-                  {profileData.professional.extraCertificates && (
-                    <p className="text-sm text-gray-600">
-                      Extra Certificates: {profileData.professional.extraCertificates}
-                    </p>
-                  )}
-                  {profileData.professional.languages && (
-                    <p className="text-sm text-gray-600">
-                      Languages Known: {profileData.professional.languages}
-                    </p>
-                  )}
-                </div>
+            {profileData.professional.length > 0 ? (
+              <div className="space-y-4 text-lg">
+                {profileData.professional.map((prof, index) => (
+                  <div key={index} className="border-l-4 border-green-500 pl-4">
+                    {prof.barCouncilNumber && (
+                      <p className="text-sm text-gray-600">
+                        Bar Council Number : {prof.barCouncilNumber}
+                      </p>
+                    )}
+                    {prof.practiceArea && (
+                      <p className="text-sm text-gray-600">
+                        Practice Area : {prof.practiceArea}
+                      </p>
+                    )}
+                    {prof.extraCertificates && (
+                      <p className="text-sm text-gray-600">
+                        Extra Certificates : {prof.extraCertificates}
+                      </p>
+                    )}
+                    {prof.languages && (
+                      <p className="text-sm text-gray-600">
+                        Languages Known : {prof.languages}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-4 text-gray-500">
@@ -440,15 +455,15 @@ const ProfileInfo: React.FC = () => {
               </button>
             </div>
             {profileData.experience.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-4 text-lg">
                 {profileData.experience.map((exp, index) => (
                   <div key={index} className="border-l-4 border-green-500 pl-4">
-                    <h4 className="font-medium text-green-700">{exp.companyName}</h4>
-                    <p className="text-sm text-gray-600">{exp.role}</p>
+                    <h4 className="font-medium text-green-700">Company Name: {exp.companyName}</h4>
+                    <p className="text-sm text-gray-600">Role : {exp.role}</p>
                     <p className="text-xs text-gray-500">
-                      {exp.startDate} - {exp.present ? 'Present' : exp.endDate}
+                    Duration : {exp.startDate} - {exp.present ? 'Present' : exp.endDate}
                     </p>
-                    <p className="text-sm text-gray-600">{exp.description}</p>
+                    <p className="text-sm text-gray-600">Description : {exp.description}</p>
                   </div>
                 ))}
               </div>
