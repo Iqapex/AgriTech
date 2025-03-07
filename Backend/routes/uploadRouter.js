@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const { v2: cloudinary } = require("cloudinary");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const User = require("../models/User"); // ✅ Import User model
 require("dotenv").config();
 
 const uploadRouter = express.Router();
@@ -24,12 +25,34 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-// ✅ Image Upload Route
-uploadRouter.post("/", upload.single("file"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+// ✅ Image Upload Route with MongoDB Storage
+uploadRouter.post("/:userId", upload.single("file"), async (req, res) => {
+  try {
+    // 🛑 Ensure a file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // ✅ Get uploaded file URL from Cloudinary
+    const imageUrl = req.file.path;
+
+    // ✅ Update user profile with new image URL
+    const userId = req.params.userId;
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: imageUrl }, // Update profile picture field
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "Image uploaded and saved successfully!", url: imageUrl, user: updatedUser });
+  } catch (error) {
+    console.error("Upload error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-  res.json({ url: req.file.path }); // Cloudinary returns the image URL
 });
 
 module.exports = uploadRouter;
