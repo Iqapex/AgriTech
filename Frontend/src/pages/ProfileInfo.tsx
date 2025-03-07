@@ -244,9 +244,6 @@ const ProfileInfo: React.FC = () => {
     }
   };
   
-  
-  
-  
 
   const handleExperienceSubmit = async () => {
     const newExperience = { ...experienceForm };

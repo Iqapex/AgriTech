@@ -74,7 +74,7 @@ authRouter.post('/login', async (req, res) => {
       const accessToken = jwt.sign(
         { id: user._id, isLawyer: user.isLawyer },
         process.env.JWT_SECRET,
-        { expiresIn: '15m' }
+        { expiresIn: '1d' }
       );
   
       const newRefreshToken = jwt.sign(
