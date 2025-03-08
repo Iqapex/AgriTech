@@ -1,65 +1,72 @@
 const mongoose = require('mongoose');
 
-const experience = new mongoose.Schema({
-    companyName: String,
-    startDate: Date,
-    endDate: Date,
-    role: String,
-    description: String,
-    present: Boolean,
+const experienceSchema = new mongoose.Schema({
+    companyName: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date },
+    role: { type: String, required: true },
+    description: { type: String },
+    present: { type: Boolean, default: false }, // Indicates if the user is currently working here
 });
 
-const education = new mongoose.Schema({
-    institute: String,
-    degreeName: String,
-    startDate: Date,
-    endDate: Date,
-    grade: String,
-    course: String,
-    present: Boolean,
+const educationSchema = new mongoose.Schema({
+    institute: { type: String, required: true },
+    degreeName: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date },
+    grade: { type: String },
+    course: { type: String, required: true },
+    present: { type: Boolean, default: false }, // Indicates if the user is currently studying here
 });
 
-const professional = new mongoose.Schema({
-    barCouncilNumber: String,
-    practiceArea: String,
-    extraCertificates: String,
-    languages: String,
+const professionalSchema = new mongoose.Schema({
+    barCouncilNumber: { type: String, required: true }, // Mandatory for lawyers
+    practiceArea: { type: String, required: true }, // Area of expertise
+    extraCertificates: { type: String }, // Additional certifications
+    languages: [{ type: String }], // Array of languages spoken
 });
 
-const rating = new mongoose.Schema({
-    userId: String,
-    rating: String,
+const ratingSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to the user who gave the rating
+    rating: { type: Number, min: 1, max: 5, required: true }, // Rating value (1-5)
 });
 
-const connection = new mongoose.Schema({
-    contactorId: String,
-    seen: Boolean,
+const connectionSchema = new mongoose.Schema({
+    contactorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to the user who sent the request
+    seen: { type: Boolean, default: false }, // Indicates if the request has been seen
+});
+
+const paymentHistorySchema = new mongoose.Schema({
+    paymentId: { type: String, required: true }, // Unique payment ID
+    amount: { type: Number, required: true }, // Payment amount
+    currency: { type: String, default: 'INR' }, // Currency (default: INR)
+    createdAt: { type: Date, default: Date.now }, // Payment timestamp
 });
 
 const UserSchema = new mongoose.Schema({
     firstname: {
         type: String,
         required: true,
-        min: 3,
-        max: 15,
+        minlength: 3,
+        maxlength: 15,
     },
     middlename: {
         type: String,
         default: "",
-        max: 15,
+        maxlength: 15,
     },
     lastname: {
         type: String,
         required: true,
-        min: 3,
-        max: 15,
+        minlength: 3,
+        maxlength: 15,
     },
     birthDate: {
         type: Date,
     },
-    education: [education],
-    experience: [experience],
-    professional: [professional],
+    education: [educationSchema],
+    experience: [experienceSchema],
+    professional: [professionalSchema],
     summary: {
         type: String,
         default: "",
@@ -75,24 +82,18 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        min: 6,
+        minlength: 6,
     },
     emailId: {
         type: String,
         required: true,
-        min: 3,
-        max: 50,
+        minlength: 3,
+        maxlength: 50,
         unique: true,
     },
-    contacts: {
-        type: Array,
-        default: [],
-    },
-    pendingContacts: [connection],
-    sentContact: {
-        type: Array,
-        default: [],
-    },
+    contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of connected users
+    pendingContacts: [connectionSchema], // Array of pending connection requests
+    sentContact: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of sent connection requests
     isLawyer: {
         type: Boolean,
         default: false,
@@ -101,7 +102,7 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    rating: [rating],
+    rating: [ratingSchema], // Array of ratings received
     geoLocation: {
         city: {
             type: String,
@@ -121,30 +122,31 @@ const UserSchema = new mongoose.Schema({
         default: "",
     },
     yearsOfExperience: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     noOfCases: {
-        type: String,
-        default: '',
+        type: Number,
+        default: 0,
     },
     status: {
         type: String,
         enum: ['Pending', 'Active'],
-        default: 'Pending'
+        default: 'Pending',
     },
     confirmationCode: {
         type: String,
-        unique: true // Ensure this field is always populated with a unique value
+        unique: true,
     },
-    subscriptionType: String,
-    subscriptionExpiry: Date,
-    paymentHistory: [{
-    paymentId: String,
-    amount: Number,
-    currency: String,
-    createdAt: Date
-  }]
+    subscriptionType: {
+        type: String,
+        enum: ['Free', 'Basic', 'Premium'], // Example subscription types
+        default: 'Free',
+    },
+    subscriptionExpiry: {
+        type: Date,
+    },
+    paymentHistory: [paymentHistorySchema], // Array of payment history
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", UserSchema);

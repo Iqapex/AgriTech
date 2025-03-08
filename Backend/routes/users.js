@@ -110,29 +110,26 @@ userRouter.put('/:id/requestConnect', async (req, res) => {
         res.status(500).json({ message: 'Failed to send request', error: err.message });
     }
 });
-
+ 
 // Accept Connection
 userRouter.put('/:id/acceptConnect', async (req, res) => {
-    if (req.user.id === req.params.id) {
-        return res.status(403).json({ message: "You can't follow yourself" });
-    }
-
     try {
-        const user = await User.findById(req.user.id);
-        const to_user = await User.findById(req.params.id);
+        const user = await User.findById(req.user.id); // Current user (acceptor)
+        const contactor = await User.findById(req.params.id); // User who sent the request
 
-        if (!to_user.contacts.includes(req.user.id)) {
-            await to_user.updateOne({ $push: { contacts: req.user.id } });
-            await user.updateOne({ $push: { contacts: req.params.id } });
-
-            // Remove from pending and sent contacts
-            await to_user.updateOne({ $pull: { sentContact: req.user.id } });
-            await user.updateOne({ $pull: { pendingContacts: { contactorId: req.params.id, seen: { $in: [true, false] } } } });
-
-            res.status(200).json({ message: 'Request Accepted!' });
-        } else {
-            res.status(403).json({ message: 'Already connected' });
+        if (user.contacts.includes(contactor._id)) {
+            return res.status(403).json({ message: 'Already connected' });
         }
+
+        // Add to each other's contacts
+        await user.updateOne({ $push: { contacts: contactor._id } });
+        await contactor.updateOne({ $push: { contacts: user._id } });
+
+        // Remove from pending and sent
+        await user.updateOne({ $pull: { pendingContacts: { contactorId: contactor._id } } });
+        await contactor.updateOne({ $pull: { sentContact: user._id } });
+
+        res.status(200).json({ message: 'Request Accepted!' });
     } catch (err) {
         res.status(500).json({ message: 'Failed to accept request', error: err.message });
     }
@@ -160,6 +157,43 @@ userRouter.put('/:id/deleteConnect', async (req, res) => {
     }
 });
 
+// Add to userRouter.js
+
+// Withdraw connection request
+userRouter.put('/:id/withdrawRequest', async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id);
+      const targetUser = await User.findById(req.params.id);
+  
+      await user.updateOne({ $pull: { sentContact: req.params.id } });
+      await targetUser.updateOne({ 
+        $pull: { pendingContacts: { contactorId: req.user.id } } 
+      });
+  
+      res.status(200).json({ message: 'Request withdrawn' });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+  
+  // Decline connection request
+  userRouter.put('/:id/declineConnect', async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id);
+      const contactor = await User.findById(req.params.id);
+  
+      await user.updateOne({ 
+        $pull: { pendingContacts: { contactorId: req.params.id } } 
+      });
+      await contactor.updateOne({ $pull: { sentContact: req.user.id } });
+  
+      res.status(200).json({ message: 'Request declined' });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+// Search for Lawyers
 // Search for Lawyers
 userRouter.post('/search/lawyers', async (req, res) => {
     try {
