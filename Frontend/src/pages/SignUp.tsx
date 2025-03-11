@@ -19,7 +19,7 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (!acceptTerms) {
       setNotifications(prev => [
         ...prev,
@@ -27,18 +27,18 @@ export default function SignUp() {
       ]);
       return;
     }
-
+  
     try {
       const response = await fetchData('/auth/register', 'POST', {
         body: {
           firstname: firstName,
           lastname: lastName,
-          emailId: email,
+          emailId: email, // Make sure to send emailId instead of email
           password,
-          isLawyer: userType === 'Vendor'
+          isLawyer: userType === 'lawyer', // Fixing this condition
         },
       });
-
+  
       if (response) {
         setNotifications(prev => [
           ...prev,
@@ -53,6 +53,7 @@ export default function SignUp() {
       ]);
     }
   };
+  
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

@@ -28,7 +28,7 @@ const professionalSchema = new mongoose.Schema({
 
 const ratingSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to the user who gave the rating
-    rating: { type: Number, min: 1, max: 5, required: true }, // Rating value (1-5)
+    rating: { type: Number, min: 1, max: 5 }, // Rating value (1-5)
 });
 
 const connectionSchema = new mongoose.Schema({

@@ -8,38 +8,41 @@
   
   // Register Route
   authRouter.post('/register', async (req, res) => {
-      try {
-          if (!req.body.emailId) {
-              return res.status(400).json({ message: 'Email ID is required' });
-          }
-  
-          const tempUser = await User.findOne({ emailId: req.body.emailId });
-          if (tempUser) return res.status(400).json({ message: 'Email ID already exists' });
-  
-          const salt = await bcrypt.genSalt(10);
-          const hashedPassword = await bcrypt.hash(req.body.password, salt);
-  
-          const newUser = new User({
-              ...req.body,
-              password: hashedPassword,
-              confirmationCode: uuidv4(),
-              status: 'Pending'
-          });
-  
-          const user = await newUser.save();
-  
-          try {
-              await sendEmail(user.firstname, user.emailId, user.confirmationCode);
-              res.status(200).json({ message: "Check your email to verify your account!" });
-          } catch (emailError) {
-              console.error("Error sending email:", emailError);
-              res.status(500).json({ message: "Failed to send confirmation email" });
-          }
-      } catch (err) {
-          console.error("Error in /register:", err);
-          res.status(500).json({ message: 'Server error' });
-      }
-  });
+    try {
+        console.log("Received Data:", req.body); // Debugging line
+
+        if (!req.body.emailId) {
+            return res.status(400).json({ message: 'Email ID is required' });
+        }
+
+        const tempUser = await User.findOne({ emailId: req.body.emailId });
+        if (tempUser) return res.status(400).json({ message: 'Email ID already exists' });
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        const newUser = new User({
+            ...req.body,
+            password: hashedPassword,
+            confirmationCode: uuidv4(),
+            status: 'Pending'
+        });
+
+        const user = await newUser.save();
+
+        try {
+            await sendEmail(user.firstname, user.emailId, user.confirmationCode);
+            res.status(200).json({ message: "Check your email to verify your account!" });
+        } catch (emailError) {
+            console.error("Error sending email:", emailError);
+            res.status(500).json({ message: "Failed to send confirmation email" });
+        }
+    } catch (err) {
+        console.error("Error in /register:", err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
   
   // Email Confirmation Route
   authRouter.get('/confirm/:confirmationCode', async (req, res) => {

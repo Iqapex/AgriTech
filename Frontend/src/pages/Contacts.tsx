@@ -619,7 +619,7 @@ export default function Contacts() {
       try {
         const token = localStorage.getItem('authToken');
         // Get current user data
-        const userRes = await fetch('http://localhost:5000/api/users/me', {
+        const userRes = await fetch(`http://localhost:5000/api/users/${userId}`, {
           headers: { 
             'Authorization': `Bearer ${token}` 
           }
