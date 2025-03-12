@@ -56,7 +56,7 @@ function App() {
             <Route path="/profile-info" element={<><Navbar setIsAuth={setIsAuth} /><ProfileInfo /><Footer /></>} />
             <Route path="/feed" element={<><Navbar setIsAuth={setIsAuth} /><Feed /><Footer /></>} />
             <Route path="/getpremium" element={<><Navbar setIsAuth={setIsAuth} /><GetPremium /><Footer /></>} />
-            <Route path="/contacts" element={<><Navbar setIsAuth={setIsAuth} /><Contacts /><Footer /></>} />
+            <Route path="/contacts/:name" element={<><Navbar setIsAuth={setIsAuth} /><Contacts /><Footer /></>} />
             <Route path="/lawyer/:name" element={<><Navbar setIsAuth={setIsAuth} /><LawyerProfile /><Footer /></>} />
             <Route path="/search" element={<><Navbar setIsAuth={setIsAuth} /><Search /><Footer /></>} />
             <Route path="/cloud" element={<><Navbar setIsAuth={setIsAuth} /><Cloud /><Footer /></>} />

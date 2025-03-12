@@ -1,5 +1,5 @@
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Users,
@@ -11,17 +11,7 @@ import {
   Menu,
   X,
   Leaf,
-
 } from "lucide-react";
-
-const navLinks = [
-  { to: "/profile-info", icon: <User2 />, name: "Profile" },
-  { to: "/home", icon: <Home />, name: "Home" },
-  { to: "/contacts", icon: <Users />, name: "Contacts" },
-  { to: "/search", icon: <Search />, name: "Search" },
-  { to: "/cloud", icon: <Cloud />, name: "Cloud" },
-  { to: "/messages", icon: <MessageCircle />, name: "Messages" },
-];
 
 interface NavbarProps {
   setIsAuth: (value: boolean) => void;
@@ -31,6 +21,18 @@ export default function Navbar({ setIsAuth }: NavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Retrieve the parameter from the URL (for example, a user id or name)
+  const { name } = useParams();
+
+  // Define navLinks inside the component so that you can use 'name' or any other variable
+  const navLinks = [
+    { to: "/profile-info", icon: <User2 />, name: "Profile" },
+    { to: "/home", icon: <Home />, name: "Home" },
+    { to: `/contacts/${name}`, icon: <Users />, name: "Contacts" },
+    { to: "/search", icon: <Search />, name: "Search" },
+    { to: "/cloud", icon: <Cloud />, name: "Cloud" },
+    { to: "/messages", icon: <MessageCircle />, name: "Messages" },
+  ];
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -68,7 +70,9 @@ export default function Navbar({ setIsAuth }: NavbarProps) {
                     : "text-green-500 hover:text-green-600 hover:bg-green-100"
                 }`}
               >
-                <div className="w-6 h-6 flex items-center justify-center">{link.icon}</div>
+                <div className="w-6 h-6 flex items-center justify-center">
+                  {link.icon}
+                </div>
                 <span className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                   {link.name}
                 </span>
