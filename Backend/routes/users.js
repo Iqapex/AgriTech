@@ -52,11 +52,17 @@ userRouter.delete('/:id', async (req, res) => {
 userRouter.get('/:userId', async (req, res) => {
     try {
       const user = await User.findById(req.params.userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+      if (!user) return res.status(404).json({ message: 'User not found' });
+  
+      const currentUser = await User.findById(req.user.id);
+      
+      // Updated pending check logic
+      const isRequestSent = currentUser.sentContact.some(id => 
+        id.equals(req.params.userId)
+      );
+  
       const { password, updatedAt, isAdmin, ...others } = user._doc;
-      res.status(200).json(others);
+      res.status(200).json({ ...others, isRequestSent });
     } catch (err) {
       res.status(500).json({ message: 'Failed to fetch user', error: err.message });
     }

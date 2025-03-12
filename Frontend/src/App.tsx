@@ -55,9 +55,9 @@ function App() {
             <Route path="/home" element={<><Navbar setIsAuth={setIsAuth} /><Home /><Footer /></>} />
             <Route path="/profile-info" element={<><Navbar setIsAuth={setIsAuth} /><ProfileInfo /><Footer /></>} />
             <Route path="/feed" element={<><Navbar setIsAuth={setIsAuth} /><Feed /><Footer /></>} />
-            <Route path="/getpremium" element={<><Navbar setIsAuth={setIsAuth} /><GetPremium /><Footer /></>} />
-            <Route path="/contacts/:name" element={<><Navbar setIsAuth={setIsAuth} /><Contacts /><Footer /></>} />
-            <Route path="/lawyer/:name" element={<><Navbar setIsAuth={setIsAuth} /><LawyerProfile /><Footer /></>} />
+            <Route path="/getpremium" element={<><Navbar setIsAuth={setIsAuth} /><GetPremium /><Footer /></>} />// Change from :name to :userId
+<Route path="/lawyer/:userId" element={<><Navbar setIsAuth={setIsAuth} /><LawyerProfile /><Footer /></>} />
+<Route path="/contacts/:userId" element={<><Navbar setIsAuth={setIsAuth} /><Contacts /><Footer /></>} />
             <Route path="/search" element={<><Navbar setIsAuth={setIsAuth} /><Search /><Footer /></>} />
             <Route path="/cloud" element={<><Navbar setIsAuth={setIsAuth} /><Cloud /><Footer /></>} />
             <Route path="/messages" element={<><Navbar setIsAuth={setIsAuth} /><Messages /><Footer /></>} />

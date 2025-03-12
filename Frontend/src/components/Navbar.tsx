@@ -24,11 +24,25 @@ export default function Navbar({ setIsAuth }: NavbarProps) {
   // Retrieve the parameter from the URL (for example, a user id or name)
   const { name } = useParams();
 
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.id;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
+
+  const userId = getUserIdFromToken();
+
   // Define navLinks inside the component so that you can use 'name' or any other variable
   const navLinks = [
     { to: "/profile-info", icon: <User2 />, name: "Profile" },
     { to: "/home", icon: <Home />, name: "Home" },
-    { to: `/contacts/${name}`, icon: <Users />, name: "Contacts" },
+    { to: `/contacts/${userId}`, icon: <Users />, name: "Contacts" },
     { to: "/search", icon: <Search />, name: "Search" },
     { to: "/cloud", icon: <Cloud />, name: "Cloud" },
     { to: "/messages", icon: <MessageCircle />, name: "Messages" },

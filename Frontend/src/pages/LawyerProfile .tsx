@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Star, User, MapPin, Check, Plus } from "lucide-react";
+import { Star, User, MapPin } from "lucide-react";
 
 interface Lawyer {
   _id: string;
@@ -18,7 +18,7 @@ interface Lawyer {
 }
 
 export default function LawyerProfile() {
-  const { name } = useParams(); // Lawyer ID from URL
+  const { userId } = useParams(); // Lawyer ID from URL
   const [lawyer, setLawyer] = useState<Lawyer | null>(null);
   const [isAdded, setIsAdded] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ export default function LawyerProfile() {
 
   useEffect(() => {
     const fetchLawyerDetails = async () => {
-      if (!name) {
+      if (!userId) {
         console.error("Lawyer ID is undefined! Check the URL structure.");
         setError("Lawyer ID is undefined");
         setLoading(false);
@@ -34,10 +34,10 @@ export default function LawyerProfile() {
       }
 
       const token = localStorage.getItem("authToken");
-      console.log("Name:", name);
+      console.log("Name:", userId);
 
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${name}`, {
+        const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export default function LawyerProfile() {
     };
 
     fetchLawyerDetails();
-  }, [name]);
+  }, [userId]);
 
   const handleAddContact = async () => {
     if (!lawyer) return;
@@ -150,17 +150,7 @@ export default function LawyerProfile() {
                   : "bg-white hover:bg-blue-50 text-green-600"
               }`}
             >
-              {isAdded ? (
-                <>
-                  <Check className="w-5 h-5" />
-                  Request Sent
-                </>
-              ) : (
-                <>
-                  <Plus className="w-5 h-5" />
-                  Add to Contacts
-                </>
-              )}
+              {isAdded ? "Request Sent" : "Add to Contacts"}
             </button>
           </div>
         </div>

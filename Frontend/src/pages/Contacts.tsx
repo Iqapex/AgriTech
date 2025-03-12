@@ -14,7 +14,7 @@ interface PendingContact {
 }
 
 export default function Contacts() {
-  const { name } = useParams();
+  const { userId } = useParams();
   const [pending, setPending] = useState<PendingContact[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,7 +22,7 @@ export default function Contacts() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!name) {
+    if (!userId) {
       setError('User ID not provided');
       setLoading(false);
       return;
@@ -33,7 +33,7 @@ export default function Contacts() {
         const token = localStorage.getItem('authToken');
         console.log(token);
         // Get current user data using userId from params
-        const userRes = await fetch(`http://localhost:5000/api/users/${name}`, {
+        const userRes = await fetch(`http://localhost:5000/api/users/${userId}`, {
           headers: { 
             'Authorization': `Bearer ${token}` 
           }
@@ -87,7 +87,7 @@ export default function Contacts() {
     };
 
     fetchData();
-  }, [name]);
+  }, [userId]);
 
   const handleAccept = async (contactorId: string) => {
     try {
@@ -182,8 +182,8 @@ export default function Contacts() {
                         <div>
                           <span className="font-medium block">{request.name}</span>
                           <span className="text-sm text-gray-500">
-                            Requested {new Date(request.timestamp).toLocaleDateString()}
-                          </span>
+        Requested {new Date(request.timestamp).toLocaleDateString()}
+      </span>
                         </div>
                       </div>
                       <div className="flex gap-2">
