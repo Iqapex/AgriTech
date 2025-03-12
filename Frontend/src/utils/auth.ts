@@ -1,8 +1,10 @@
+//this is my auth.ts file
+
 import { useState, useEffect } from 'react';
 export const checkAuth = async () => {
     try {
       // Check for valid access token
-      const response = await fetch('/api/auth/refresh', {
+      const response = await fetch('http:localhost/api/auth/refresh', {
         method: 'POST',
         credentials: 'include'
       });
