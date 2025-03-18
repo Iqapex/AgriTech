@@ -1,41 +1,45 @@
-import { useEffect, useState, useRef } from 'react';
+// Messages.tsx
+import React, { useState, useEffect, useRef } from 'react';
 import { Send, User, Users } from 'lucide-react';
 import io from 'socket.io-client';
 import GroupCreateModal from '../components/GroupCreateModal';
+import {jwtDecode} from 'jwt-decode';
 
-type Message = {
+// Type definitions
+interface Message {
   _id: string;
   conversationId: string;
   senderId: string;
   text: string;
   createdAt: string;
-};
+}
 
-type Conversation = {
+interface Conversation {
   _id: string;
   members: string[];
-  name: string;
-};
+  name?: string;
+}
 
-type AppUser = {
+interface AppUser {
   _id: string;
   firstname: string;
   lastname: string;
-  profilePic: string;
-  isLawyer: boolean;
-};
+  profilePic?: string;
+  isLawyer?: boolean;
+}
 
-type AuthData = {
+interface CurrentUser {
   _id: string;
+  firstname: string;
+  lastname: string;
+  profilePic?: string;
+  isLawyer?: boolean;
   accessToken: string;
-  // any additional user fields you might store
-};
+}
 
-const Messages = () => {
-  // Parse the user data from localStorage (make sure it is stored via JSON.stringify)
-  const currentUser: AuthData | null = JSON.parse(localStorage.getItem('currentUser') || 'null');
-
-  // State for connected contacts, conversations, messages, and UI controls
+const Messages: React.FC = () => {
+  // State for current user (fetched via token and API)
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -47,7 +51,30 @@ const Messages = () => {
   const socket = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Establish socket connection and listen for events
+  // Fetch current user from token and API
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        const userId = decoded.id;
+        fetch(`http://localhost:5000/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setCurrentUser({ ...data, accessToken: token });
+          })
+          .catch((err) => console.error('Failed to fetch current user:', err));
+      } catch (err) {
+        console.error('Failed to decode token:', err);
+      }
+    } else {
+      console.error('No auth token found');
+    }
+  }, []);
+
+  // Setup socket connection when currentUser is available
   useEffect(() => {
     if (currentUser) {
       socket.current = io('http://localhost:8900');
@@ -59,7 +86,7 @@ const Messages = () => {
 
       socket.current.on('getMessage', (newMsg: Message) => {
         if (newMsg.conversationId === selectedConversation) {
-          setMessages(prev => [...prev, newMsg]);
+          setMessages((prev) => [...prev, newMsg]);
         }
       });
 
@@ -69,99 +96,114 @@ const Messages = () => {
     }
   }, [currentUser, selectedConversation]);
 
-  // Fetch connected contacts and conversations
+  // Fetch contacts from the current user's data
   useEffect(() => {
-    const fetchData = async () => {
-      if (currentUser) {
+    if (currentUser) {
+      const fetchContacts = async () => {
         try {
-          // Fetch connected contacts from your contacts endpoint
-          const contactsResponse = await fetch(`http://localhost:5000/api/users/contacts/${currentUser._id}`, {
-            headers: {
-              Authorization: `Bearer ${currentUser.accessToken}`,
-            },
+          const res = await fetch(`http://localhost:5000/api/users/${currentUser._id}`, {
+            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
           });
-          const contactsData = await contactsResponse.json();
-          setContacts(contactsData);
-
-          // Fetch conversations for the current user
-          const convosResponse = await fetch(
-            `http://localhost:5000/api/conversation/${currentUser._id}`,
-            {
-              headers: {
-                Authorization: `Bearer ${currentUser.accessToken}`,
-              },
-            }
+          if (!res.ok) throw new Error('Failed to fetch user data');
+          const userData = await res.json();
+          if (!userData.contacts || userData.contacts.length === 0) {
+            setContacts([]);
+            return;
+          }
+          const acceptedContacts: AppUser[] = await Promise.all(
+            userData.contacts.map(async (contactId: string) => {
+              const res = await fetch(`http://localhost:5000/api/users/${contactId}`, {
+                headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+              });
+              if (!res.ok) throw new Error(`Failed to fetch contact ${contactId}`);
+              const data = await res.json();
+              return {
+                _id: contactId,
+                firstname: data.firstname,
+                lastname: data.lastname,
+                profilePic: data.profilePic || '',
+                isLawyer: data.isLawyer,
+              };
+            })
           );
-          const convosData = await convosResponse.json();
+          setContacts(acceptedContacts);
+        } catch (error) {
+          console.error('Error fetching contacts:', error);
+        }
+      };
+      fetchContacts();
+    }
+  }, [currentUser]);
+
+  // Fetch conversations for the current user
+  useEffect(() => {
+    if (currentUser) {
+      const fetchConversations = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/conversation/${currentUser._id}`, {
+            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+          });
+          if (!response.ok) throw new Error('Failed to fetch conversations');
+          const convosData = await response.json();
           setConversations(convosData);
         } catch (error) {
-          console.error('Failed to fetch contacts/conversations:', error);
+          console.error('Error fetching conversations:', error);
         }
-      }
-    };
-
-    fetchData();
+      };
+      fetchConversations();
+    }
   }, [currentUser]);
 
   // Fetch messages for the selected conversation
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (selectedConversation && currentUser) {
+    if (selectedConversation && currentUser) {
+      const fetchMessages = async () => {
         try {
-          const response = await fetch(
-            `http://localhost:5000/api/message/${selectedConversation}`,
-            {
-              headers: {
-                Authorization: `Bearer ${currentUser.accessToken}`,
-              },
-            }
-          );
+          const response = await fetch(`http://localhost:5000/api/message/${selectedConversation}`, {
+            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+          });
+          if (!response.ok) throw new Error('Failed to fetch messages');
           const msgs = await response.json();
           setMessages(msgs);
         } catch (error) {
-          console.error('Failed to fetch messages:', error);
+          console.error('Error fetching messages:', error);
         }
-      }
-    };
-
-    fetchMessages();
+      };
+      fetchMessages();
+    }
   }, [selectedConversation, currentUser]);
 
-  // Scroll to bottom when messages update
+  // Auto-scroll to the bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Handle selecting a contact or group conversation
+  // Handler to select a contact and fetch/create a one-on-one conversation
   const handleSelectContact = async (contactId: string) => {
     if (!currentUser) return;
     try {
-      // This endpoint either finds or creates a conversation between two users
       const response = await fetch(
         `http://localhost:5000/api/conversation/find/${currentUser._id}/${contactId}`,
         {
-          headers: {
-            Authorization: `Bearer ${currentUser.accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${currentUser.accessToken}` },
         }
       );
+      if (!response.ok) throw new Error('Failed to fetch/create conversation');
       const conversation = await response.json();
       setSelectedConversation(conversation._id);
     } catch (err) {
-      console.error('Failed to fetch/create conversation:', err);
+      console.error('Error selecting contact:', err);
     }
   };
 
-  // Handle sending a message
+  // Handler to send a new message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation || !currentUser) return;
-
     const messageData = {
       conversationId: selectedConversation,
       senderId: currentUser._id,
       text: newMessage,
     };
-
     try {
       const response = await fetch('http://localhost:5000/api/message', {
         method: 'POST',
@@ -171,26 +213,24 @@ const Messages = () => {
         },
         body: JSON.stringify(messageData),
       });
-
+      if (!response.ok) throw new Error('Failed to send message');
       const savedMessage = await response.json();
-      setMessages(prev => [...prev, savedMessage]);
+      setMessages((prev) => [...prev, savedMessage]);
       setNewMessage('');
-
-      // Emit message via socket to update other clients
+      // Emit the message via socket for real‑time update
       socket.current?.emit('sendMessage', {
         senderId: currentUser._id,
         conversationId: selectedConversation,
         text: newMessage,
       });
     } catch (err) {
-      console.error('Failed to send message:', err);
+      console.error('Error sending message:', err);
     }
   };
 
-  // Handle creating a group conversation
+  // Handler to create a group conversation
   const handleCreateGroup = async (name: string, selectedUserIds: string[]) => {
     if (!currentUser) return;
-
     try {
       const response = await fetch('http://localhost:5000/api/conversation/group', {
         method: 'POST',
@@ -203,14 +243,18 @@ const Messages = () => {
           members: [currentUser._id, ...selectedUserIds],
         }),
       });
-
+      if (!response.ok) throw new Error('Failed to create group');
       const newGroup = await response.json();
-      setConversations(prev => [...prev, newGroup]);
+      setConversations((prev) => [...prev, newGroup]);
       setSelectedConversation(newGroup._id);
     } catch (err) {
-      console.error('Failed to create group:', err);
+      console.error('Error creating group:', err);
     }
   };
+
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 px-4">
@@ -228,9 +272,8 @@ const Messages = () => {
                   <Users className="w-5 h-5" />
                 </button>
               </div>
-
               <div className="space-y-2">
-                {contacts.length ? (
+                {contacts.length > 0 ? (
                   contacts.map((user) => (
                     <div
                       key={user._id}
@@ -258,7 +301,7 @@ const Messages = () => {
                           {user.firstname} {user.lastname}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {user.isLawyer ? 'Lawyer' : 'Client'}
+                          {user.isLawyer ? 'Vendor' : 'Farmer'}
                         </p>
                       </div>
                     </div>
@@ -267,17 +310,13 @@ const Messages = () => {
                   <div className="text-gray-500 text-center">No connected contacts</div>
                 )}
               </div>
-
               <div className="border-t pt-4">
                 <h2 className="text-lg font-bold mb-4">Conversations</h2>
                 <div className="space-y-2">
                   {conversations.map((convo) => {
-                    // Determine if it is a group conversation
-                    const isGroup = convo.members.length > 2 || !!convo.name;
-                    // For one-on-one conversations, get the other user from contacts list
-                    const otherMembers = convo.members.filter(m => m !== currentUser?._id);
-                    const contactUser = contacts.find(u => u._id === otherMembers[0]);
-
+                    const isGroup = convo.members.length > 2 || Boolean(convo.name);
+                    const otherMembers = convo.members.filter((m) => m !== currentUser._id);
+                    const contactUser = contacts.find((u) => u._id === otherMembers[0]);
                     return (
                       <div
                         key={convo._id}
@@ -307,12 +346,13 @@ const Messages = () => {
                         )}
                         <div>
                           <p className="font-medium">
-                            {convo.name || (contactUser ? `${contactUser.firstname} ${contactUser.lastname}` : 'Unknown User')}
+                            {convo.name ||
+                              (contactUser
+                                ? `${contactUser.firstname} ${contactUser.lastname}`
+                                : 'Unknown User')}
                           </p>
                           {isGroup && (
-                            <p className="text-sm text-gray-500">
-                              {convo.members.length} members
-                            </p>
+                            <p className="text-sm text-gray-500">{convo.members.length} members</p>
                           )}
                         </div>
                       </div>
@@ -321,18 +361,15 @@ const Messages = () => {
                 </div>
               </div>
             </div>
-
             {/* Chat Area */}
             <div className="col-span-3 h-[calc(100vh-8rem)] flex flex-col">
               {selectedConversation ? (
                 <>
                   <div className="flex-1 p-4 overflow-y-auto space-y-4">
                     {messages.map((message) => {
-                      const isCurrentUser = message.senderId === currentUser?._id;
-                      const sender = contacts.find(u => u._id === message.senderId);
-                      // If group conversation, show sender info for incoming messages
-                      const isGroup = conversations.find(c => c._id === selectedConversation)?.members.length > 2;
-
+                      const isCurrentUser = message.senderId === currentUser._id;
+                      const sender = contacts.find((u) => u._id === message.senderId);
+                      const isGroup = conversations.find((c) => c._id === selectedConversation)?.members.length > 2;
                       return (
                         <div
                           key={message._id}
@@ -374,7 +411,6 @@ const Messages = () => {
                     })}
                     <div ref={messagesEndRef} />
                   </div>
-
                   <div className="p-4 border-t border-gray-200">
                     <div className="flex items-center gap-2">
                       <input
@@ -404,8 +440,6 @@ const Messages = () => {
           </div>
         </div>
       </div>
-
-      {/* Group Creation Modal */}
       <GroupCreateModal
         users={contacts}
         isOpen={showCreateGroup}
