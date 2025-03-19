@@ -66,6 +66,7 @@ io.on("connection", (socket) => {
                         senderId,
                         text,
                         conversationId,
+                        createdAt: new Date(),
                     });
                 } else {
                     console.error(`User ${recieverId} not found for message delivery.`);

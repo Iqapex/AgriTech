@@ -60,7 +60,7 @@ function App() {
 <Route path="/contacts/:userId" element={<><Navbar setIsAuth={setIsAuth} /><Contacts /><Footer /></>} />
             <Route path="/search" element={<><Navbar setIsAuth={setIsAuth} /><Search /><Footer /></>} />
             <Route path="/cloud" element={<><Navbar setIsAuth={setIsAuth} /><Cloud /><Footer /></>} />
-            <Route path="/messages" element={<><Navbar setIsAuth={setIsAuth} /><Messages /><Footer /></>} />
+            <Route path="/messages" element={<><Navbar setIsAuth={setIsAuth} /><Messages /></>} />
           </Route>
 
           <Route path="*" element={<Navigate to={isAuth ? "/home" : "/"} />} />

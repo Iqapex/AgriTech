@@ -1,9 +1,9 @@
 // Messages.tsx
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, Users } from 'lucide-react';
-import io from 'socket.io-client';
-import GroupCreateModal from '../components/GroupCreateModal';
-import {jwtDecode} from 'jwt-decode';
+import React, { useState, useEffect, useRef } from "react";
+import { Send, User, Users } from "lucide-react";
+import io from "socket.io-client";
+import GroupCreateModal from "../components/GroupCreateModal";
+import { jwtDecode } from "jwt-decode";
 
 // Type definitions
 interface Message {
@@ -42,8 +42,10 @@ const Messages: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [selectedConversation, setSelectedConversation] = useState<
+    string | null
+  >(null);
   const [contacts, setContacts] = useState<AppUser[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -53,7 +55,7 @@ const Messages: React.FC = () => {
 
   // Fetch current user from token and API
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (token) {
       try {
         const decoded: any = jwtDecode(token);
@@ -65,26 +67,26 @@ const Messages: React.FC = () => {
           .then((data) => {
             setCurrentUser({ ...data, accessToken: token });
           })
-          .catch((err) => console.error('Failed to fetch current user:', err));
+          .catch((err) => console.error("Failed to fetch current user:", err));
       } catch (err) {
-        console.error('Failed to decode token:', err);
+        console.error("Failed to decode token:", err);
       }
     } else {
-      console.error('No auth token found');
+      console.error("No auth token found");
     }
   }, []);
 
   // Setup socket connection when currentUser is available
   useEffect(() => {
     if (currentUser) {
-      socket.current = io('http://localhost:8900');
-      socket.current.emit('addUser', currentUser._id);
+      socket.current = io("http://localhost:8900");
+      socket.current.emit("addUser", currentUser._id);
 
-      socket.current.on('getUsers', (users: string[]) => {
+      socket.current.on("getUsers", (users: string[]) => {
         setOnlineUsers(users);
       });
 
-      socket.current.on('getMessage', (newMsg: Message) => {
+      socket.current.on("getMessage", (newMsg: Message) => {
         if (newMsg.conversationId === selectedConversation) {
           setMessages((prev) => [...prev, newMsg]);
         }
@@ -101,10 +103,13 @@ const Messages: React.FC = () => {
     if (currentUser) {
       const fetchContacts = async () => {
         try {
-          const res = await fetch(`http://localhost:5000/api/users/${currentUser._id}`, {
-            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-          });
-          if (!res.ok) throw new Error('Failed to fetch user data');
+          const res = await fetch(
+            `http://localhost:5000/api/users/${currentUser._id}`,
+            {
+              headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+            }
+          );
+          if (!res.ok) throw new Error("Failed to fetch user data");
           const userData = await res.json();
           if (!userData.contacts || userData.contacts.length === 0) {
             setContacts([]);
@@ -112,23 +117,29 @@ const Messages: React.FC = () => {
           }
           const acceptedContacts: AppUser[] = await Promise.all(
             userData.contacts.map(async (contactId: string) => {
-              const res = await fetch(`http://localhost:5000/api/users/${contactId}`, {
-                headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-              });
-              if (!res.ok) throw new Error(`Failed to fetch contact ${contactId}`);
+              const res = await fetch(
+                `http://localhost:5000/api/users/${contactId}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${currentUser.accessToken}`,
+                  },
+                }
+              );
+              if (!res.ok)
+                throw new Error(`Failed to fetch contact ${contactId}`);
               const data = await res.json();
               return {
                 _id: contactId,
                 firstname: data.firstname,
                 lastname: data.lastname,
-                profilePic: data.profilePic || '',
+                profilePic: data.profilePic || "",
                 isLawyer: data.isLawyer,
               };
             })
           );
           setContacts(acceptedContacts);
         } catch (error) {
-          console.error('Error fetching contacts:', error);
+          console.error("Error fetching contacts:", error);
         }
       };
       fetchContacts();
@@ -140,14 +151,17 @@ const Messages: React.FC = () => {
     if (currentUser) {
       const fetchConversations = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/conversation/${currentUser._id}`, {
-            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-          });
-          if (!response.ok) throw new Error('Failed to fetch conversations');
+          const response = await fetch(
+            `http://localhost:5000/api/conversation/${currentUser._id}`,
+            {
+              headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+            }
+          );
+          if (!response.ok) throw new Error("Failed to fetch conversations");
           const convosData = await response.json();
           setConversations(convosData);
         } catch (error) {
-          console.error('Error fetching conversations:', error);
+          console.error("Error fetching conversations:", error);
         }
       };
       fetchConversations();
@@ -159,14 +173,17 @@ const Messages: React.FC = () => {
     if (selectedConversation && currentUser) {
       const fetchMessages = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/message/${selectedConversation}`, {
-            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-          });
-          if (!response.ok) throw new Error('Failed to fetch messages');
+          const response = await fetch(
+            `http://localhost:5000/api/message/${selectedConversation}`,
+            {
+              headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+            }
+          );
+          if (!response.ok) throw new Error("Failed to fetch messages");
           const msgs = await response.json();
           setMessages(msgs);
         } catch (error) {
-          console.error('Error fetching messages:', error);
+          console.error("Error fetching messages:", error);
         }
       };
       fetchMessages();
@@ -175,7 +192,7 @@ const Messages: React.FC = () => {
 
   // Auto-scroll to the bottom when messages update
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Handler to select a contact and fetch/create a one-on-one conversation
@@ -188,11 +205,11 @@ const Messages: React.FC = () => {
           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
         }
       );
-      if (!response.ok) throw new Error('Failed to fetch/create conversation');
+      if (!response.ok) throw new Error("Failed to fetch/create conversation");
       const conversation = await response.json();
       setSelectedConversation(conversation._id);
     } catch (err) {
-      console.error('Error selecting contact:', err);
+      console.error("Error selecting contact:", err);
     }
   };
 
@@ -205,26 +222,35 @@ const Messages: React.FC = () => {
       text: newMessage,
     };
     try {
-      const response = await fetch('http://localhost:5000/api/message', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/message", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${currentUser.accessToken}`,
         },
         body: JSON.stringify(messageData),
       });
-      if (!response.ok) throw new Error('Failed to send message');
+      if (!response.ok) throw new Error("Failed to send message");
       const savedMessage = await response.json();
       setMessages((prev) => [...prev, savedMessage]);
-      setNewMessage('');
+      setNewMessage("");
+      const conversation = conversations.find(
+        (convo) => convo._id === selectedConversation
+      );
+      if (!conversation) return;
+
+      const recieverIds = conversation.members.filter(
+        (memberId) => memberId !== currentUser._id
+      );
       // Emit the message via socket for real‑time update
-      socket.current?.emit('sendMessage', {
+      socket.current?.emit("sendMessage", {
         senderId: currentUser._id,
-        conversationId: selectedConversation,
+        recieverIds, // <-- added this
         text: newMessage,
+        conversationId: selectedConversation,
       });
     } catch (err) {
-      console.error('Error sending message:', err);
+      console.error("Error sending message:", err);
     }
   };
 
@@ -232,23 +258,26 @@ const Messages: React.FC = () => {
   const handleCreateGroup = async (name: string, selectedUserIds: string[]) => {
     if (!currentUser) return;
     try {
-      const response = await fetch('http://localhost:5000/api/conversation/group', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${currentUser.accessToken}`,
-        },
-        body: JSON.stringify({
-          name,
-          members: [currentUser._id, ...selectedUserIds],
-        }),
-      });
-      if (!response.ok) throw new Error('Failed to create group');
+      const response = await fetch(
+        "http://localhost:5000/api/conversation/group",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentUser.accessToken}`,
+          },
+          body: JSON.stringify({
+            name,
+            members: [currentUser._id, ...selectedUserIds],
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to create group");
       const newGroup = await response.json();
       setConversations((prev) => [...prev, newGroup]);
       setSelectedConversation(newGroup._id);
     } catch (err) {
-      console.error('Error creating group:', err);
+      console.error("Error creating group:", err);
     }
   };
 
@@ -292,7 +321,9 @@ const Messages: React.FC = () => {
                             <User className="text-gray-500" size={20} />
                           </div>
                         )}
-                        {onlineUsers.includes(user._id) && (
+                        {onlineUsers.some(
+                          (onlineUser: any) => onlineUser.userId === user._id
+                        ) && (
                           <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                         )}
                       </div>
@@ -301,28 +332,37 @@ const Messages: React.FC = () => {
                           {user.firstname} {user.lastname}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {user.isLawyer ? 'Vendor' : 'Farmer'}
+                          {user.isLawyer ? "Vendor" : "Farmer"}
                         </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-gray-500 text-center">No connected contacts</div>
+                  <div className="text-gray-500 text-center">
+                    No connected contacts
+                  </div>
                 )}
               </div>
               <div className="border-t pt-4">
                 <h2 className="text-lg font-bold mb-4">Conversations</h2>
                 <div className="space-y-2">
                   {conversations.map((convo) => {
-                    const isGroup = convo.members.length > 2 || Boolean(convo.name);
-                    const otherMembers = convo.members.filter((m) => m !== currentUser._id);
-                    const contactUser = contacts.find((u) => u._id === otherMembers[0]);
+                    const isGroup =
+                      convo.members.length > 2 || Boolean(convo.name);
+                    const otherMembers = convo.members.filter(
+                      (m) => m !== currentUser._id
+                    );
+                    const contactUser = contacts.find(
+                      (u) => u._id === otherMembers[0]
+                    );
                     return (
                       <div
                         key={convo._id}
                         onClick={() => setSelectedConversation(convo._id)}
                         className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${
-                          selectedConversation === convo._id ? 'bg-green-50' : 'hover:bg-gray-100'
+                          selectedConversation === convo._id
+                            ? "bg-green-50"
+                            : "hover:bg-gray-100"
                         }`}
                       >
                         {isGroup ? (
@@ -349,10 +389,12 @@ const Messages: React.FC = () => {
                             {convo.name ||
                               (contactUser
                                 ? `${contactUser.firstname} ${contactUser.lastname}`
-                                : 'Unknown User')}
+                                : "Unknown User")}
                           </p>
                           {isGroup && (
-                            <p className="text-sm text-gray-500">{convo.members.length} members</p>
+                            <p className="text-sm text-gray-500">
+                              {convo.members.length} members
+                            </p>
                           )}
                         </div>
                       </div>
@@ -367,17 +409,27 @@ const Messages: React.FC = () => {
                 <>
                   <div className="flex-1 p-4 overflow-y-auto space-y-4">
                     {messages.map((message) => {
-                      const isCurrentUser = message.senderId === currentUser._id;
-                      const sender = contacts.find((u) => u._id === message.senderId);
-                      const isGroup = conversations.find((c) => c._id === selectedConversation)?.members.length > 2;
+                      const isCurrentUser =
+                        message.senderId === currentUser._id;
+                      const sender = contacts.find(
+                        (u) => u._id === message.senderId
+                      );
+                      const isGroup =
+                        conversations.find(
+                          (c) => c._id === selectedConversation
+                        )?.members.length > 2;
                       return (
                         <div
                           key={message._id}
-                          className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                          className={`flex ${
+                            isCurrentUser ? "justify-end" : "justify-start"
+                          }`}
                         >
                           <div
                             className={`max-w-[70%] rounded-lg p-3 ${
-                              isCurrentUser ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-800'
+                              isCurrentUser
+                                ? "bg-green-500 text-white"
+                                : "bg-gray-100 text-gray-800"
                             }`}
                           >
                             {!isCurrentUser && isGroup && (
@@ -400,10 +452,13 @@ const Messages: React.FC = () => {
                             )}
                             <p>{message.text}</p>
                             <p className="text-xs opacity-75 mt-1">
-                              {new Date(message.createdAt).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
+                              {new Date(message.createdAt).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
                             </p>
                           </div>
                         </div>
@@ -417,7 +472,9 @@ const Messages: React.FC = () => {
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && handleSendMessage()
+                        }
                         placeholder="Type a message..."
                         className="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500"
                       />
