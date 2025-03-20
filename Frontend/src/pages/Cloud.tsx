@@ -1,17 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import {jwtDecode} from 'jwt-decode';
 import { 
-  Folder, Clock, Image, Video, Upload, Cloud as CloudIcon, 
-  File, Search, Trash 
+  Folder, Clock, Image as ImageIcon, File, Search, Video, Upload, Cloud as CloudIcon, Trash, Share2 
 } from 'lucide-react';
 
-type FileType = 'pdf' | 'image' | 'video' | 'document';
+type ActiveTab = 'files' | 'recent' | 'images' | 'documents' | 'videos';
 
 interface FileItem {
   id: string;
   fileName: string;
   url: string;
-  type: FileType;
   createdAt: Date;
 }
 
@@ -20,11 +18,10 @@ interface CurrentUser {
   accessToken: string;
   firstname?: string;
   lastname?: string;
-  // add any other fields as needed
 }
 
 export default function Cloud() {
-  const [activeTab, setActiveTab] = useState<'files' | 'recent' | 'photos' | 'videos'>('files');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('files');
   const [searchQuery, setSearchQuery] = useState('');
   const [files, setFiles] = useState<FileItem[]>([]);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
@@ -36,7 +33,6 @@ export default function Cloud() {
     if (token) {
       try {
         const decoded: any = jwtDecode(token);
-        console.log('Decoded token:', decoded);
         const userIdFromToken = decoded.id || decoded._id;
         if (!userIdFromToken) {
           console.error('User ID not found in token');
@@ -53,8 +49,6 @@ export default function Cloud() {
             return res.json();
           })
           .then((data) => {
-            console.log('Fetched user data:', data);
-            // Map _id to id so that currentUser.id is defined
             setCurrentUser({ ...data, id: data._id, accessToken: token });
           })
           .catch((err) => console.error('Failed to fetch current user:', err));
@@ -66,11 +60,8 @@ export default function Cloud() {
     }
   }, []);
   
-  // Extract userId and authToken from currentUser
   const userId = currentUser?.id;
   const authToken = currentUser?.accessToken;
-  console.log('User ID:', userId);
-  console.log('Auth Token:', authToken);
   
   // Fetch files when userId and authToken are available
   useEffect(() => {
@@ -86,9 +77,10 @@ export default function Cloud() {
           body: JSON.stringify({ userId }),
         });
         if (res.ok) {
-          const data: FileItem[] = await res.json();
-          console.log('Fetched files:', data);
-          setFiles(data);
+          const data = await res.json();
+          // Map _id to id for UI consistency
+          const mappedFiles = data.map((file: any) => ({ ...file, id: file._id }));
+          setFiles(mappedFiles);
         } else {
           console.error('Failed to fetch files, status:', res.status);
         }
@@ -99,7 +91,7 @@ export default function Cloud() {
     fetchFiles();
   }, [userId, authToken]);
 
-  // Handle file uploads with debugging logs
+  // Handle file upload
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!userId || !authToken) {
       console.error('User not authenticated');
@@ -107,7 +99,6 @@ export default function Cloud() {
     }
     const newFiles = e.target.files;
     if (!newFiles) return;
-    console.log('Files selected for upload:', newFiles);
     for (let i = 0; i < newFiles.length; i++) {
       const file = newFiles[i];
       const formData = new FormData();
@@ -117,15 +108,15 @@ export default function Cloud() {
         const res = await fetch('http://localhost:5000/api/files/fileUpload', {
           method: 'POST',
           headers: {
-            // Let the browser set Content-Type for FormData
+            // Do not set Content-Type so browser can set boundary
             'Authorization': `Bearer ${authToken}`,
           },
           body: formData,
         });
         if (res.ok) {
-          const uploadedFile: FileItem = await res.json();
-          console.log('Uploaded file:', uploadedFile);
-          setFiles(prev => [uploadedFile, ...prev]);
+          const uploadedFile = await res.json();
+          const mappedFile = { ...uploadedFile, id: uploadedFile._id };
+          setFiles(prev => [mappedFile, ...prev]);
         } else {
           console.error('Upload failed, status:', res.status);
           const errorText = await res.text();
@@ -137,79 +128,131 @@ export default function Cloud() {
     }
   };
   
-  // Delete a file (permanent deletion) with debugging logs
+  // Delete a file (permanent deletion)
   const deleteFile = async (fileId: string) => {
     if (!userId || !authToken) {
-      console.error('User not authenticated');
+      console.error("User not authenticated");
       return;
     }
     try {
-      const res = await fetch('http://localhost:5000/api/files/permanentDelete', {
-        method: 'DELETE',
+      const res = await fetch(
+        `http://localhost:5000/api/files/permanentDelete?fileId=${fileId}&userId=${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (res.ok) {
+        setFiles((prev) => prev.filter((f) => f.id !== fileId));
+      } else {
+        console.error("Delete failed, status:", res.status);
+        const errorText = await res.text();
+        console.error("Delete error response:", errorText);
+      }
+    } catch (err) {
+      console.error("Error during file deletion:", err);
+    }
+  };
+
+  // Share a file
+  const shareFile = async (fileId: string) => {
+    if (!userId || !authToken) {
+      console.error("User not authenticated");
+      return;
+    }
+    const emails = prompt("Enter email(s) to share with (comma separated):");
+    if (!emails) return;
+    const sharedWith = emails.split(",").map(email => email.trim());
+    try {
+      const res = await fetch('http://localhost:5000/api/files/shared/', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`,
         },
-        body: JSON.stringify({ fileId, userId }),
+        body: JSON.stringify({ fileId, userId, sharedWith }),
       });
       if (res.ok) {
-        console.log('File deleted:', fileId);
-        setFiles(prev => prev.filter(f => f.id !== fileId));
+        alert("File shared successfully!");
       } else {
-        console.error('Delete failed, status:', res.status);
-        const errorText = await res.text();
-        console.error('Delete error response:', errorText);
+        alert("Failed to share file");
       }
     } catch (err) {
-      console.error('Error during file deletion:', err);
+      console.error("Error sharing file:", err);
     }
   };
 
-  // Derive a thumbnail URL for videos using a Cloudinary transformation
+  // Helper to derive a thumbnail URL for videos using a Cloudinary transformation
   const getVideoThumbnailUrl = (url: string) => {
+    // Transform the Cloudinary URL to request a 200x200 thumbnail image.
     const modified = url.replace('/video/upload/', '/video/upload/w_200,h_200,c_fill/');
     return modified.replace(/\.[a-z]+$/, '.jpg');
   };
 
-  // Render a thumbnail instead of a generic file icon
-  const getThumbnail = (file: FileItem) => {
-    if (file.url && file.type === 'image') {
-      return (
-        <img
-          src={file.url}
-          alt={file.fileName}
+  // A helper component for rendering file thumbnails with fallback behavior.
+  const Thumbnail = ({ file }: { file: FileItem }) => {
+    const [imgError, setImgError] = useState(false);
+    const lowerName = file.fileName.toLowerCase();
+
+    if (/\.(png|jpe?g|gif)$/i.test(lowerName)) {
+      return imgError ? (
+        <File className="w-12 h-12 text-gray-500" />
+      ) : (
+        <img 
+          src={file.url} 
+          alt={file.fileName} 
           className="object-cover w-full h-full"
+          onError={() => setImgError(true)}
         />
       );
-    } else if (file.url && file.type === 'video') {
+    } else if (/\.(mp4|mov|3gp)$/i.test(lowerName)) {
       const videoThumb = getVideoThumbnailUrl(file.url);
-      return (
-        <img
-          src={videoThumb}
-          alt={file.fileName}
+      return imgError ? (
+        <Video className="w-12 h-12 text-gray-500" />
+      ) : (
+        <img 
+          src={videoThumb} 
+          alt={file.fileName} 
           className="object-cover w-full h-full"
+          onError={() => setImgError(true)}
         />
       );
+    } else if (/\.(pdf|doc|docx)$/i.test(lowerName)) {
+      return <File className="w-12 h-12 text-gray-500" />;
     } else {
       return <File className="w-12 h-12 text-gray-500" />;
     }
   };
 
-  // Filter files based on the active tab and search query
+  // Filter files based on activeTab and search query
   const getFilteredFiles = () => {
     let filtered = files;
+    const now = new Date();
     switch (activeTab) {
-      case 'photos':
-        filtered = filtered.filter(f => f.type === 'image');
+      case 'recent':
+        filtered = filtered.filter(file => {
+          const fileDate = new Date(file.createdAt);
+          return (now.getTime() - fileDate.getTime()) < 7 * 24 * 3600 * 1000;
+        });
+        break;
+      case 'images':
+        filtered = filtered.filter(file =>
+          /\.(png|jpe?g|gif)$/i.test(file.fileName)
+        );
+        break;
+      case 'documents':
+        filtered = filtered.filter(file =>
+          /\.(pdf|doc|docx)$/i.test(file.fileName)
+        );
         break;
       case 'videos':
-        filtered = filtered.filter(f => f.type === 'video');
+        filtered = filtered.filter(file =>
+          /\.(mp4|mov|3gp)$/i.test(file.fileName)
+        );
         break;
-      case 'recent':
-        filtered = [...filtered]
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 5);
-        break;
+      case 'files':
       default:
         break;
     }
@@ -247,11 +290,18 @@ export default function Cloud() {
                   <span>Recent</span>
                 </button>
                 <button 
-                  onClick={() => setActiveTab('photos')}
-                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${activeTab === 'photos' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'}`}
+                  onClick={() => setActiveTab('images')}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${activeTab === 'images' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'}`}
                 >
-                  <Image className="w-5 h-5" />
-                  <span>Photos</span>
+                  <ImageIcon className="w-5 h-5" />
+                  <span>Images</span>
+                </button>
+                <button 
+                  onClick={() => setActiveTab('documents')}
+                  className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${activeTab === 'documents' ? 'bg-green-50 text-green-600' : 'hover:bg-green-50 text-gray-600'}`}
+                >
+                  <File className="w-5 h-5" />
+                  <span>Documents</span>
                 </button>
                 <button 
                   onClick={() => setActiveTab('videos')}
@@ -302,7 +352,7 @@ export default function Cloud() {
                       ref={fileInputRef}
                       onChange={handleFileUpload}
                       className="hidden"
-                      accept="image/*, video/*, application/pdf"
+                      accept="image/*, video/*, application/pdf, .doc, .docx"
                     />
                     <button 
                       onClick={() => fileInputRef.current?.click()}
@@ -327,17 +377,28 @@ export default function Cloud() {
                     >
                       <div className="relative">
                         <div className="aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
-                          {getThumbnail(file)}
+                          <Thumbnail file={file} />
                         </div>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteFile(file.id);
-                          }}
-                          className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md"
-                        >
-                          <Trash className="w-4 h-4 text-red-500" />
-                        </button>
+                        <div className="absolute top-1 right-1 flex gap-1">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              shareFile(file.id);
+                            }}
+                            className="bg-white rounded-full p-1 shadow-md"
+                          >
+                            <Share2 className="w-4 h-4 text-blue-500" />
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteFile(file.id);
+                            }}
+                            className="bg-white rounded-full p-1 shadow-md"
+                          >
+                            <Trash className="w-4 h-4 text-red-500" />
+                          </button>
+                        </div>
                       </div>
                       <p className="text-sm text-gray-600 truncate">{file.fileName}</p>
                       <p className="text-xs text-gray-400 mt-1">
