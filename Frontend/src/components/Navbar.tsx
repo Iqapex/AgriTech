@@ -1,9 +1,8 @@
-import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   Home,
   Users,
-  Search,
   Cloud,
   MessageCircle,
   LogOut,
@@ -12,6 +11,7 @@ import {
   X,
   Leaf,
 } from "lucide-react";
+import { SlFeed } from "react-icons/sl";
 
 interface NavbarProps {
   setIsAuth: (value: boolean) => void;
@@ -22,7 +22,7 @@ export default function Navbar({ setIsAuth }: NavbarProps) {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // Retrieve the parameter from the URL (for example, a user id or name)
-  const { name } = useParams();
+  
 
   const getUserIdFromToken = () => {
     const token = localStorage.getItem('authToken');
@@ -43,7 +43,7 @@ export default function Navbar({ setIsAuth }: NavbarProps) {
     { to: "/profile-info", icon: <User2 />, name: "Profile" },
     { to: "/home", icon: <Home />, name: "Home" },
     { to: `/contacts/${userId}`, icon: <Users />, name: "Contacts" },
-    { to: "/search", icon: <Search />, name: "Search" },
+    { to: "/feed", icon: <SlFeed />, name: "Feed" },
     { to: "/cloud", icon: <Cloud />, name: "Cloud" },
     { to: "/messages", icon: <MessageCircle />, name: "Messages" },
   ];
