@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {jwtDecode} from "jwt-decode";
+import { formatDistanceToNow } from "date-fns";
 import { ImageIcon, ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 
 interface AppUser {
@@ -14,6 +15,8 @@ interface AppUser {
 
 interface Comment {
   userId: string;
+  firstname: string;
+  lastname: string;
   comment: string;
   createdAt: string;
   profilePic?: string;
@@ -22,7 +25,8 @@ interface Comment {
 interface Post {
   _id: string;
   userId: string;
-  user: string;
+  firstname: string;
+  lastname: string;
   profilePic?: string;
   desc: string;
   img?: string;
@@ -336,9 +340,11 @@ export default function Feed() {
                       alt="Post User"
                     />
                     <div>
-                      <p className="font-semibold text-gray-900">{post.user}</p>
+                    <p className="font-bold text-gray-900">{post.firstname} {post.lastname}</p>
                       <span className="text-sm text-gray-500">
-                        {new Date(post.createdAt).toLocaleString()}
+                      <p className="text-sm text-gray-500">
+                  {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                </p>
                       </span>
                     </div>
                   </div>
@@ -394,6 +400,7 @@ export default function Feed() {
                               alt="Comment User"
                             />
                             <div className="flex-1 bg-gray-50 p-3 rounded-xl">
+                            <p className="text-sm font-bold">{c.firstname} {c.lastname}</p>
                               <p className="text-sm text-gray-800">
                                 {c.comment}
                               </p>
@@ -403,7 +410,9 @@ export default function Feed() {
                                 </button>
                                 <span>•</span>
                                 <span>
-                                  {new Date(c.createdAt).toLocaleString()}
+                                <p className="text-sm text-gray-500">
+                  {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                </p>
                                 </span>
                               </div>
                             </div>

@@ -111,26 +111,34 @@ postRouter.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     const postUser = await User.findById(post.userId);
+
+    // Process each comment to include firstname and lastname
     const updatedComments = await Promise.all(
       post.comments.map(async (comment) => {
-        const commentObj = comment.toObject();
-        const commentUser = await User.findById(commentObj.userId);
+        const commentUser = await User.findById(comment.userId);
         return {
-          ...commentObj,
+          ...comment.toObject(),
+          firstname: commentUser?.firstname || "Unknown",
+          lastname: commentUser?.lastname || "User",
           profilePic: commentUser?.profilePic || null,
         };
       })
     );
-    const responsePost = {
+
+    // Return the post with user details
+    res.status(200).json({
       ...post.toObject(),
       profilePic: postUser?.profilePic || null,
+      firstname: postUser?.firstname || "Unknown",
+      lastname: postUser?.lastname || "User",
       comments: updatedComments,
-    };
-    res.status(200).json(responsePost);
+    });
   } catch (err) {
+    console.error("Error fetching post:", err);
     res.status(500).json(err);
   }
 });
+
 
 // Get the feed: current user posts + contacts' posts
 postRouter.get("/feed/:userId", async (req, res) => {
@@ -140,35 +148,41 @@ postRouter.get("/feed/:userId", async (req, res) => {
     const contactPosts = await Promise.all(
       user.contacts.map((contactId) => Post.find({ userId: contactId }))
     );
-    const allPosts = userPosts.concat(...contactPosts).sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-    const postsWithProfilePic = await Promise.all(
+
+    const allPosts = userPosts.concat(...contactPosts).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Add `firstname` and `lastname` to posts and comments
+    const postsWithUserDetails = await Promise.all(
       allPosts.map(async (post) => {
         const postUser = await User.findById(post.userId);
         const updatedComments = await Promise.all(
-          post.comments.map(async (c) => {
-            if (!c.profilePic) {
-              try {
-                const commentUser = await User.findById(c.userId);
-                return { ...c.toObject(), profilePic: commentUser?.profilePic };
-              } catch (err) {
-                console.error("Error fetching comment user for comment:", c, err);
-                return c;
-              }
-            }
-            return c;
+          post.comments.map(async (comment) => {
+            const commentUser = await User.findById(comment.userId);
+            return {
+              ...comment.toObject(),
+              firstname: commentUser?.firstname || "Unknown",
+              lastname: commentUser?.lastname || "User",
+              profilePic: commentUser?.profilePic || null,
+            };
           })
         );
-        return { ...post.toObject(), profilePic: postUser?.profilePic, comments: updatedComments };
+        return {
+          ...post.toObject(),
+          firstname: postUser?.firstname || "Unknown",
+          lastname: postUser?.lastname || "User",
+          profilePic: postUser?.profilePic || null,
+          comments: updatedComments,
+        };
       })
     );
-    res.status(200).json(postsWithProfilePic);
+
+    res.status(200).json(postsWithUserDetails);
   } catch (err) {
     console.error("Error fetching feed:", err);
     res.status(500).json(err);
   }
 });
+
 
 // Timeline: only current user's posts
 postRouter.get("/timeline/:userId", async (req, res) => {
