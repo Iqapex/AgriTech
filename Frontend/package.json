@@ -12,6 +12,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@types/socket.io-client": "^1.4.36",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.4.7",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.344.0",

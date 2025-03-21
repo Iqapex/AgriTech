@@ -10,8 +10,10 @@ postRouter.post("/", async (req, res) => {
   const savePost = async () => {
     try {
       const savedPost = await newPost.save();
-      res.status(200).json(savedPost);
+      const postUser = await User.findById(savedPost.userId);
+      res.status(200).json({ ...savedPost.toObject(), profilePic: postUser?.profilePic });
     } catch (err) {
+      console.error("Error saving post:", err);
       res.status(500).json(err);
     }
   };
@@ -21,11 +23,11 @@ postRouter.post("/", async (req, res) => {
     const uid = req.body.userId;
     const file = req.files.file;
     const fileExt = path.extname(file.name);
-    const mFileName = `${uid}_post_${Date.now()}${fileExt}`;
+    const mFileName = `${uid}_post_${Date.now()}${fileExt}`;  // using template literal
     const movePath = path.join(__dirname, "..", "uploads", mFileName);
     file.mv(movePath, (err) => {
       if (err) {
-        console.log("File upload error: " + err);
+        console.error("File upload error:", err);
         return res.status(500).json({ error: "File upload failed" });
       } else {
         newPost.fileName = mFileName;
@@ -41,13 +43,15 @@ postRouter.post("/", async (req, res) => {
 postRouter.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
+    // Compare string values by converting ObjectId to string if necessary
+    if (post.userId.toString() === req.body.userId) {
       await Post.updateOne({ _id: req.params.id }, { $set: req.body });
       res.status(200).json("Post Updated");
     } else {
       res.status(403).json("You can update only your Posts");
     }
   } catch (err) {
+    console.error("Error updating post:", err);
     res.status(500).json(err);
   }
 });
@@ -56,13 +60,14 @@ postRouter.put("/:id", async (req, res) => {
 postRouter.delete("/:id/:userId", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.userId === req.params.userId) {
+    if (post.userId.toString() === req.params.userId) {
       await Post.deleteOne({ _id: req.params.id });
       res.status(200).json("Post deleted");
     } else {
       res.status(403).json("You can delete only your Posts");
     }
   } catch (err) {
+    console.error("Error deleting post:", err);
     res.status(500).json(err);
   }
 });
@@ -79,26 +84,49 @@ postRouter.put("/:id/like", async (req, res) => {
       res.status(200).json("UnLiked");
     }
   } catch (err) {
+    console.error("Error updating likes:", err);
     res.status(500).json(err);
   }
 });
 
-// Comment on a post
+// Comment on a post (with debugging)
 postRouter.put("/addcomment/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
+    console.log("Before adding comment, current comments:", post.comments);
+    if (!req.body.userId || !req.body.comment) {
+      return res.status(400).json({ error: "Missing comment userId or comment" });
+    }
     await post.updateOne({ $push: { comments: req.body } });
+    console.log("Added comment:", req.body);
     res.status(200).json("Comment Posted!");
   } catch (err) {
+    console.error("Error adding comment:", err);
     res.status(500).json(err);
   }
 });
 
-// Get a post by id
+// Get a post by id (with debugging in comment processing)
 postRouter.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    res.status(200).json(post);
+    const postUser = await User.findById(post.userId);
+    const updatedComments = await Promise.all(
+      post.comments.map(async (comment) => {
+        const commentObj = comment.toObject();
+        const commentUser = await User.findById(commentObj.userId);
+        return {
+          ...commentObj,
+          profilePic: commentUser?.profilePic || null,
+        };
+      })
+    );
+    const responsePost = {
+      ...post.toObject(),
+      profilePic: postUser?.profilePic || null,
+      comments: updatedComments,
+    };
+    res.status(200).json(responsePost);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -108,14 +136,36 @@ postRouter.get("/:id", async (req, res) => {
 postRouter.get("/feed/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    // Get posts created by the current user
     const userPosts = await Post.find({ userId: user._id });
-    // Get posts by contacts (assume user.contacts is an array of user IDs)
     const contactPosts = await Promise.all(
       user.contacts.map((contactId) => Post.find({ userId: contactId }))
     );
-    res.status(200).json(userPosts.concat(...contactPosts).sort((a, b) => b.createdAt - a.createdAt));
+    const allPosts = userPosts.concat(...contactPosts).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    const postsWithProfilePic = await Promise.all(
+      allPosts.map(async (post) => {
+        const postUser = await User.findById(post.userId);
+        const updatedComments = await Promise.all(
+          post.comments.map(async (c) => {
+            if (!c.profilePic) {
+              try {
+                const commentUser = await User.findById(c.userId);
+                return { ...c.toObject(), profilePic: commentUser?.profilePic };
+              } catch (err) {
+                console.error("Error fetching comment user for comment:", c, err);
+                return c;
+              }
+            }
+            return c;
+          })
+        );
+        return { ...post.toObject(), profilePic: postUser?.profilePic, comments: updatedComments };
+      })
+    );
+    res.status(200).json(postsWithProfilePic);
   } catch (err) {
+    console.error("Error fetching feed:", err);
     res.status(500).json(err);
   }
 });
@@ -127,6 +177,7 @@ postRouter.get("/timeline/:userId", async (req, res) => {
     const userPosts = await Post.find({ userId: user._id });
     res.status(200).json(userPosts);
   } catch (err) {
+    console.error("Error fetching timeline:", err);
     res.status(500).json(err);
   }
 });
