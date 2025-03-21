@@ -19,12 +19,16 @@ const fileStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     const userId = req.body.userId || 'default';
+    // Set resource_type based on mimetype: if video, then use "video", else "auto" (or "image")
+    let resource_type = file.mimetype.startsWith('video/') ? 'video' : 'auto';
     return {
       folder: `yourapp/${userId}`,
-      allowedFormats: ["jpg", "png", "jpeg", "pdf", "mp4", "mov", "3gp", "doc", "docx"],
+      allowedFormats: ["jpg", "png", "jpeg", "webp", "pdf", "mp4", "mov", "3gp", "doc", "docx"],
+      resource_type, // Cloudinary will now know how to process the file
     };
   },
 });
+
 const fileUpload = multer({ storage: fileStorage });
 
 // Set up Cloudinary storage for profile picture uploads

@@ -1,49 +1,63 @@
+require("dotenv").config();
 const express = require("express");
 const postRouter = express.Router();
-const path = require("path");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { v2: cloudinary } = require("cloudinary");
 
-// Create a post
-postRouter.post("/", async (req, res) => {
+// Configure Cloudinary with environment variables
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Set up Cloudinary storage for posts using multer-storage-cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "yourapp/posts",            // Change folder name as needed
+    allowedFormats: ["jpg", "png", "jpeg", "gif"],
+  },
+});
+
+// Create a multer instance with a file size limit of 20 MB
+const upload = multer({ storage });
+
+// -----------------------------
+// Create a Post Route with File Upload
+// -----------------------------
+postRouter.post("/", upload.single("file"), async (req, res) => {
   const newPost = new Post(req.body);
-  const savePost = async () => {
-    try {
-      const savedPost = await newPost.save();
-      const postUser = await User.findById(savedPost.userId);
-      res.status(200).json({ ...savedPost.toObject(), profilePic: postUser?.profilePic });
-    } catch (err) {
-      console.error("Error saving post:", err);
-      res.status(500).json(err);
-    }
-  };
 
-  // If a file is attached (for example, using multer or express-fileupload)
-  if (req.files && req.files.file) {
-    const uid = req.body.userId;
-    const file = req.files.file;
-    const fileExt = path.extname(file.name);
-    const mFileName = `${uid}_post_${Date.now()}${fileExt}`;  // using template literal
-    const movePath = path.join(__dirname, "..", "uploads", mFileName);
-    file.mv(movePath, (err) => {
-      if (err) {
-        console.error("File upload error:", err);
-        return res.status(500).json({ error: "File upload failed" });
-      } else {
-        newPost.fileName = mFileName;
-        savePost();
-      }
+  // If a file is uploaded, multer provides req.file
+  if (req.file) {
+    // Cloudinary returns the secure URL in req.file.path and public_id in req.file.filename
+    newPost.img = req.file.path;
+    newPost.fileName = req.file.filename;
+  }
+
+  try {
+    const savedPost = await newPost.save();
+    const postUser = await User.findById(savedPost.userId);
+    res.status(200).json({ 
+      ...savedPost.toObject(), 
+      profilePic: postUser?.profilePic 
     });
-  } else {
-    savePost();
+  } catch (err) {
+    console.error("Error saving post:", err);
+    res.status(500).json(err);
   }
 });
 
-// Update a post
+// -----------------------------
+// Update a Post
+// -----------------------------
 postRouter.put("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    // Compare string values by converting ObjectId to string if necessary
     if (post.userId.toString() === req.body.userId) {
       await Post.updateOne({ _id: req.params.id }, { $set: req.body });
       res.status(200).json("Post Updated");
@@ -56,7 +70,9 @@ postRouter.put("/:id", async (req, res) => {
   }
 });
 
-// Delete a post
+// -----------------------------
+// Delete a Post
+// -----------------------------
 postRouter.delete("/:id/:userId", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -72,7 +88,9 @@ postRouter.delete("/:id/:userId", async (req, res) => {
   }
 });
 
-// Like / dislike a post
+// -----------------------------
+// Like / Dislike a Post
+// -----------------------------
 postRouter.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -89,16 +107,16 @@ postRouter.put("/:id/like", async (req, res) => {
   }
 });
 
-// Comment on a post (with debugging)
+// -----------------------------
+// Comment on a Post
+// -----------------------------
 postRouter.put("/addcomment/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    console.log("Before adding comment, current comments:", post.comments);
     if (!req.body.userId || !req.body.comment) {
       return res.status(400).json({ error: "Missing comment userId or comment" });
     }
     await post.updateOne({ $push: { comments: req.body } });
-    console.log("Added comment:", req.body);
     res.status(200).json("Comment Posted!");
   } catch (err) {
     console.error("Error adding comment:", err);
@@ -106,41 +124,35 @@ postRouter.put("/addcomment/:id", async (req, res) => {
   }
 });
 
-// Get a post by id (with debugging in comment processing)
+// -----------------------------
+// Get a Post by ID (with comments processing)
+// -----------------------------
 postRouter.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     const postUser = await User.findById(post.userId);
-
-    // Process each comment to include firstname and lastname
     const updatedComments = await Promise.all(
       post.comments.map(async (comment) => {
         const commentUser = await User.findById(comment.userId);
         return {
           ...comment.toObject(),
-          firstname: commentUser?.firstname || "Unknown",
-          lastname: commentUser?.lastname || "User",
           profilePic: commentUser?.profilePic || null,
         };
       })
     );
-
-    // Return the post with user details
     res.status(200).json({
       ...post.toObject(),
       profilePic: postUser?.profilePic || null,
-      firstname: postUser?.firstname || "Unknown",
-      lastname: postUser?.lastname || "User",
       comments: updatedComments,
     });
   } catch (err) {
-    console.error("Error fetching post:", err);
     res.status(500).json(err);
   }
 });
 
-
-// Get the feed: current user posts + contacts' posts
+// -----------------------------
+// Get the Feed: Current User's Posts + Contacts' Posts
+// -----------------------------
 postRouter.get("/feed/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -148,43 +160,39 @@ postRouter.get("/feed/:userId", async (req, res) => {
     const contactPosts = await Promise.all(
       user.contacts.map((contactId) => Post.find({ userId: contactId }))
     );
-
-    const allPosts = userPosts.concat(...contactPosts).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    // Add `firstname` and `lastname` to posts and comments
-    const postsWithUserDetails = await Promise.all(
+    const allPosts = userPosts.concat(...contactPosts).sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    const postsWithProfilePic = await Promise.all(
       allPosts.map(async (post) => {
         const postUser = await User.findById(post.userId);
         const updatedComments = await Promise.all(
-          post.comments.map(async (comment) => {
-            const commentUser = await User.findById(comment.userId);
-            return {
-              ...comment.toObject(),
-              firstname: commentUser?.firstname || "Unknown",
-              lastname: commentUser?.lastname || "User",
-              profilePic: commentUser?.profilePic || null,
-            };
+          post.comments.map(async (c) => {
+            if (!c.profilePic) {
+              try {
+                const commentUser = await User.findById(c.userId);
+                return { ...c.toObject(), profilePic: commentUser?.profilePic };
+              } catch (err) {
+                console.error("Error fetching comment user for comment:", c, err);
+                return c;
+              }
+            }
+            return c;
           })
         );
-        return {
-          ...post.toObject(),
-          firstname: postUser?.firstname || "Unknown",
-          lastname: postUser?.lastname || "User",
-          profilePic: postUser?.profilePic || null,
-          comments: updatedComments,
-        };
+        return { ...post.toObject(), profilePic: postUser?.profilePic, comments: updatedComments };
       })
     );
-
-    res.status(200).json(postsWithUserDetails);
+    res.status(200).json(postsWithProfilePic);
   } catch (err) {
     console.error("Error fetching feed:", err);
     res.status(500).json(err);
   }
 });
 
-
-// Timeline: only current user's posts
+// -----------------------------
+// Timeline: Only Current User's Posts
+// -----------------------------
 postRouter.get("/timeline/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);

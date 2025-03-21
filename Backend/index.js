@@ -16,6 +16,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
+app.use(express.json({ limit: "50mb" }));         // or a limit that fits your needs
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(express.json()); // Parse JSON bodies
 app.use(morgan("common")); // Logging
 app.use(helmet()); // Security headers
