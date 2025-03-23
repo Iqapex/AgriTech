@@ -1,7 +1,12 @@
-
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Star, User, MapPin } from "lucide-react";
+
+interface Contact {
+  _id: string;
+  name: string;
+  profilePic: string;
+}
 
 interface Lawyer {
   _id: string;
@@ -13,7 +18,7 @@ interface Lawyer {
   location: string;
   education: string;
   experience: string;
-  contacts: string[];
+  contacts: Contact[];
   profilePic: string;
 }
 
@@ -34,7 +39,6 @@ export default function LawyerProfile() {
       }
 
       const token = localStorage.getItem("authToken");
-      console.log("Name:", userId);
 
       try {
         const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
@@ -46,12 +50,29 @@ export default function LawyerProfile() {
         });
 
         if (!res.ok) {
-          throw new Error(
-            `Failed to fetch lawyer details: ${res.status} ${res.statusText}`
-          );
+          throw new Error(`Failed to fetch lawyer details: ${res.status} ${res.statusText}`);
         }
 
         const data = await res.json();
+
+        // Fetch contact details for each contact id in data.contacts
+        const contacts = await Promise.all(
+          data.contacts.map(async (contactId: string) => {
+            const res = await fetch(`http://localhost:5000/api/users/${contactId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) {
+              // if fails, return minimal data
+              return { _id: contactId, name: "Unknown", profilePic: "" };
+            }
+            const contactData = await res.json();
+            return {
+              _id: contactId,
+              name: `${contactData.firstname} ${contactData.lastname}`,
+              profilePic: contactData.profilePic || "",
+            };
+          })
+        );
 
         setLawyer({
           _id: data._id,
@@ -65,7 +86,7 @@ export default function LawyerProfile() {
           location: data.geoLocation?.city || "Unknown",
           education: data.education || "Not Available",
           experience: `${data.yearsOfExperience || 0} years of experience`,
-          contacts: data.contacts || [],
+          contacts: contacts,
           profilePic: data.profilePic || "",
         });
       } catch (error: any) {
@@ -82,7 +103,6 @@ export default function LawyerProfile() {
   const handleAddContact = async () => {
     if (!lawyer) return;
     const token = localStorage.getItem("authToken");
-    console.log("Token:", token);
 
     try {
       const res = await fetch(`http://localhost:5000/api/users/${lawyer._id}/requestConnect`, {
@@ -95,8 +115,6 @@ export default function LawyerProfile() {
       if (!res.ok) {
         throw new Error("Failed to send connection request");
       }
-      const result = await res.json();
-      console.log("Connection request sent:", result);
       setIsAdded(true);
     } catch (error) {
       console.error("Error sending connection request:", error);
@@ -147,7 +165,7 @@ export default function LawyerProfile() {
               className={`ml-auto flex items-center gap-2 px-6 py-3 rounded-full transition-all ${
                 isAdded
                   ? "bg-green-500 hover:bg-green-600 text-white"
-                  : "bg-white hover:bg-blue-50 text-green-600"
+                  : "bg-white hover:bg-green-50 text-green-600"
               }`}
             >
               {isAdded ? "Request Sent" : "Add to Contacts"}
@@ -159,17 +177,17 @@ export default function LawyerProfile() {
         <div className="grid lg:grid-cols-3 gap-8 p-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-gray-50 p-6 rounded-xl transition hover:shadow-md">
+            <div className="bg-green-100 p-6 rounded-xl transition hover:shadow-md">
               <h2 className="text-xl font-semibold mb-4">About</h2>
               <p className="text-gray-600 leading-relaxed">{lawyer.about}</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 p-6 rounded-xl transition hover:shadow-md">
+              <div className="bg-green-100 p-6 rounded-xl transition hover:shadow-md">
                 <h3 className="font-semibold mb-3">Experience</h3>
                 <p className="text-gray-600">{lawyer.experience}</p>
               </div>
-              <div className="bg-gray-50 p-6 rounded-xl transition hover:shadow-md">
+              <div className="bg-green-100 p-6 rounded-xl transition hover:shadow-md">
                 <h3 className="font-semibold mb-3">Education</h3>
                 {Array.isArray(lawyer.education) ? (
                   lawyer.education.map((edu, index) => (
@@ -186,11 +204,11 @@ export default function LawyerProfile() {
 
           {/* Right Column */}
           <div className="space-y-6">
-            <div className="bg-gray-50 p-6 rounded-xl transition hover:shadow-md">
+            <div className="bg-green-100 p-6 rounded-xl transition hover:shadow-md">
               <h3 className="font-semibold mb-4">Orders Statistics</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span>Total Orders</span>
+                  <span>Total Checkups</span>
                   <span className="font-semibold text-green-600">
                     {lawyer.cases}
                   </span>
@@ -210,20 +228,28 @@ export default function LawyerProfile() {
               </div>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-xl transition hover:shadow-md">
+            <div className="bg-green-100 p-6 rounded-xl transition hover:shadow-md">
               <h3 className="font-semibold mb-4">Contacts</h3>
               <ul className="space-y-3">
-                {lawyer.contacts.map((contact, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-white transition"
-                  >
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-600">{contact}</span>
-                  </li>
-                ))}
+                {lawyer.contacts.length === 0 ? (
+                  <li className="text-gray-400 text-center py-3">No contacts found</li>
+                ) : (
+                  lawyer.contacts.map(contact => (
+                    <li
+                      key={contact._id}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-white transition"
+                    >
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      {contact.profilePic ? (
+                        <img src={contact.profilePic} alt={contact.name} className="w-10 h-10 rounded-full object-cover" />
+                      ) : (
+                        <User className="w-10 h-10 text-gray-400" />
+                      )}
+                      </div>
+                      <span className="text-gray-600">{contact.name}</span>
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
           </div>
@@ -232,4 +258,3 @@ export default function LawyerProfile() {
     </div>
   );
 }
-

@@ -306,7 +306,7 @@ const ProfileInfo: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-green-100 p-4 pt-24 px-24">
+    <div className="min-h-screen bg-green-100 p-4 pt-24 md:px-24">
       <div className="flex flex-col md:flex-row gap-4">
         {/* Left sidebar */}
         <div className="w-full md:w-1/5 bg-white p-4 rounded-lg shadow-sm">
